@@ -17,7 +17,11 @@ module.exports = (sequelize, DataTypes) => {
   sso.init({
     userId: DataTypes.UUID,
     type: DataTypes.STRING,
-    sso_account: DataTypes.STRING
+    sso_account: DataTypes.STRING,
+    verified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    }
   }, {
     sequelize,
     modelName: 'sso',

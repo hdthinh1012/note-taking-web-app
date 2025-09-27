@@ -1,0 +1,1 @@
+podman run -d --name note-db-test -p 5433:5432 localhost/note-db-image-test:latest

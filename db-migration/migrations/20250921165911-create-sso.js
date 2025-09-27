@@ -1,7 +1,9 @@
 'use strict';
+const {Sequelize} = require('sequelize');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface, DataTypes) {
     await queryInterface.createTable('ssos', {
       uuid: {
         type: Sequelize.UUID,
@@ -27,7 +29,7 @@ module.exports = {
       }
     });
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface, DataTypes) {
     await queryInterface.dropTable('ssos');
   }
 };

@@ -1,14 +1,18 @@
 'use strict';
+const {Sequelize} = require('sequelize');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up (queryInterface, DataTypes) {
     /**
      * Add altering commands here.
      *
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
+    console.log('queryInterface', queryInterface);
+    console.log('Sequelize', Sequelize);
+
     await queryInterface.createTable('users', {
       uuid: {
         type: Sequelize.UUID,
@@ -55,7 +59,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down (queryInterface, DataTypes) {
     /**
      * Add reverting commands here.
      *
