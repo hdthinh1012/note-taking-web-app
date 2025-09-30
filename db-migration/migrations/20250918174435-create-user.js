@@ -1,5 +1,6 @@
 'use strict';
 const {Sequelize} = require('sequelize');
+const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433/notedb_test');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -10,8 +11,9 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
+    queryInterface = sequelize.getQueryInterface();
     console.log('queryInterface', queryInterface);
-    console.log('Sequelize', Sequelize);
+    // console.log('Sequelize', Sequelize);
 
     await queryInterface.createTable('users', {
       uuid: {
@@ -66,6 +68,7 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
+    queryInterface = sequelize.getQueryInterface();
     await queryInterface.dropTable('users');
   }
 };

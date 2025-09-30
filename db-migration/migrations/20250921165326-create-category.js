@@ -1,9 +1,11 @@
 'use strict';
 const {Sequelize} = require('sequelize');
+const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433/notedb_test');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, DataTypes) {
+    queryInterface = sequelize.getQueryInterface();
     await queryInterface.createTable('categories', {
       id: {
         allowNull: false,
@@ -28,6 +30,7 @@ module.exports = {
     });
   },
   async down(queryInterface, DataTypes) {
+    queryInterface = sequelize.getQueryInterface();
     await queryInterface.dropTable('categories');
   }
 };

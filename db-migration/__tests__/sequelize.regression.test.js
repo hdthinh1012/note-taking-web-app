@@ -58,6 +58,24 @@ describe('Database Integration', () => {
     });
 
     afterAll(async () => {
+        const { Umzug, SequelizeStorage } = require('umzug');
+        const path = require('path');
+
+        const umzug = new Umzug({
+            migrations: {
+                glob: 'migrations/*.js',
+                params: [
+                    sequelize.getQueryInterface(), 
+                    Sequelize
+                ],
+            },
+            context: sequelize.getQueryInterface(),
+            storage: new SequelizeStorage({sequelize}),
+            logger: console,
+        });
+
+        await umzug.down({ to: 0 });
+        
         await sequelize.close();
         await client.connect();
         // await client.query('DROP DATABASE IF EXISTS notedb_test');

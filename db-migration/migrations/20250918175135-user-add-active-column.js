@@ -1,5 +1,6 @@
 'use strict';
 const {Sequelize} = require('sequelize');
+const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433/notedb_test');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -10,19 +11,21 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
+    queryInterface = sequelize.getQueryInterface();
     await queryInterface.addColumn('users', 'active', {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
     });
   },
 
-  async down (queryInterface, DataTypes) {
+  async down (queryInterface, DataTypes) {   
     /**
      * Add reverting commands here.
      *
      * Example:
      * await queryInterface.dropTable('users');
      */
+    queryInterface = sequelize.getQueryInterface();
     await queryInterface.removeColumn('users', 'active');
   }
 };
