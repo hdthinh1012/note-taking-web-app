@@ -24,5 +24,4 @@ function authorizeRole(requiredRole) {
     };
 }
 
-exports.authenticateToken = authenticateToken;
-exports.authorizeRole = authorizeRole;
+module.exports = { authenticateToken, authorizeRole };
