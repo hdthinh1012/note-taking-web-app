@@ -13,8 +13,8 @@ app.use(cors({
 app.use(express.json());
 
 
-const authRouter = require('./auth/endpoints');
-const notesRouter = require('./notes/endpoints');
+const authRouter = require('./modules/auth/endpoints');
+const notesRouter = require('./modules/notes/endpoints');
 app.use('/auth', authRouter);
 app.use('/notes', notesRouter);
 
