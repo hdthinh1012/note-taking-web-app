@@ -1,0 +1,109 @@
+<mxfile host="65bd71144e">
+    <diagram id="AccountCreationSequence" name="Account Creation Flow">
+        <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                
+                <!-- Package -->
+                <mxCell id="package1" value="&lt;p style=&quot;margin:0px;margin-top:4px;margin-left:5px;text-align:left;&quot;&gt;&lt;b&gt;sd&lt;/b&gt;&amp;nbsp;Account Creation Flow&lt;/p&gt;" style="html=1;shape=mxgraph.sysml.package;overflow=fill;labelX=125;align=left;spacingLeft=5;verticalAlign=top;spacingTop=-3;" vertex="1" parent="1">
+                    <mxGeometry x="20" y="40" width="800" height="600" as="geometry"/>
+                </mxCell>
+                
+                <!-- Lifelines -->
+                <mxCell id="user" value="User" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;" vertex="1" parent="1">
+                    <mxGeometry x="60" y="80" width="100" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="userActivation" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;" vertex="1" parent="user">
+                    <mxGeometry x="45" y="60" width="10" height="440" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="frontend" value="Frontend\n(Password Form)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;" vertex="1" parent="1">
+                    <mxGeometry x="200" y="80" width="100" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="frontendActivation" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;" vertex="1" parent="frontend">
+                    <mxGeometry x="45" y="80" width="10" height="400" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="server" value="Auth Handler\n(Server)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="80" width="100" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="serverActivation" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;" vertex="1" parent="server">
+                    <mxGeometry x="45" y="120" width="10" height="320" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="bcryptService" value="Bcrypt Service" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="80" width="100" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="bcryptActivation" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;" vertex="1" parent="bcryptService">
+                    <mxGeometry x="45" y="200" width="10" height="80" as="geometry"/>
+                </mxCell>
+                
+                <mxCell id="database" value="Users Table\n(PostgreSQL)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;" vertex="1" parent="1">
+                    <mxGeometry x="620" y="80" width="100" height="520" as="geometry"/>
+                </mxCell>
+                <mxCell id="databaseActivation" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;" vertex="1" parent="database">
+                    <mxGeometry x="45" y="320" width="10" height="80" as="geometry"/>
+                </mxCell>
+                
+                <!-- Messages -->
+                <mxCell id="msg1" value="1: Enter password" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1" source="userActivation" target="frontendActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="115" y="160" as="sourcePoint"/>
+                        <mxPoint x="245" y="160" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="msg2" value="2: POST /create-account\n{email, password}" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1" source="frontendActivation" target="serverActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="255" y="200" as="sourcePoint"/>
+                        <mxPoint x="385" y="200" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="msg3" value="3: hashPassword(password)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1" source="serverActivation" target="bcryptActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="395" y="280" as="sourcePoint"/>
+                        <mxPoint x="525" y="280" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="msg4" value="4: return hashedPassword" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" edge="1" parent="1" source="bcryptActivation" target="serverActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="525" y="320" as="sourcePoint"/>
+                        <mxPoint x="395" y="320" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="msg5" value="5: INSERT INTO users\n(email, password_hash, role)" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" edge="1" parent="1" source="serverActivation" target="databaseActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="395" y="400" as="sourcePoint"/>
+                        <mxPoint x="665" y="400" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="msg6" value="6: return user record" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" edge="1" parent="1" source="databaseActivation" target="serverActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="665" y="440" as="sourcePoint"/>
+                        <mxPoint x="395" y="440" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="msg7" value="7: 201 Created\n{message: 'Account created'}" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" edge="1" parent="1" source="serverActivation" target="frontendActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="385" y="480" as="sourcePoint"/>
+                        <mxPoint x="255" y="480" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+                <mxCell id="msg8" value="8: Redirect to login page" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" edge="1" parent="1" source="frontendActivation" target="userActivation">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="245" y="520" as="sourcePoint"/>
+                        <mxPoint x="115" y="520" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

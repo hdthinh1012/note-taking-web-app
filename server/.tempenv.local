@@ -1,0 +1,4 @@
+EMAIL_HOST=smtp.your-email-provider.com
+EMAIL_PORT=465 # Or 465 for SSL/TLS
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-email-password # Or app-specific password for providers like Gmail

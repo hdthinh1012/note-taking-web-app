@@ -30,3 +30,21 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+// const { sendEmail } = require('./utils/email/emailServices');
+
+// // Example usage
+// async function exampleUsage() {
+//     try {
+//         await sendEmail(
+//             'hdthinh001@gmail.com',
+//             'Welcome to Our Service!',
+//             '<p>Hello there,</p><p>Thank you for joining our platform!</p>'
+//         );
+//     } catch (error) {
+//         console.error('Failed to send welcome email:', error);
+//     }
+// }
+
+// exampleUsage();
