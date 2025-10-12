@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   sso.init({
+    uuid: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+    },
     userId: DataTypes.UUID,
     type: DataTypes.STRING,
     sso_account: DataTypes.STRING,

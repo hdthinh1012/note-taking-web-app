@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ssoRepository = require('../../repository/ssoRepository');
+const uuid = require('uuid');
 
 // Healthcheck endpoint
 router.get('/healthcheck', (req, res) => {
@@ -15,7 +16,11 @@ router.post('/register', (req, res) => {
   // Simulate user creation and email sending
   console.log(`Registering user with email: ${email}`);
   // Here you would typically interact with your user database and email service
-  ssoRepository.createSsoEntry({ userId: 'hdthinh01', type: 'email', sso_account: email, verified: false });
+  const userId = uuid.v4();
+  // For demonstration, we just log the userId
+  console.log(`User registered with ID: ${userId}`);
+  const uuidAssigned = uuid.v4();
+  ssoRepository.createSsoEntry({ uuid: uuidAssigned, userId, type: 'email', sso_account: email, verified: false });
 
   res.status(201).json({ message: 'User registered successfully' });
 });
