@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+const { Sequelize } = require('sequelize');
 
 const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5432/notedb');
 
@@ -13,4 +13,4 @@ async function testConnection() {
 
 testConnection();
 
-export default sequelize;
+module.exports = { sequelize, Sequelize };

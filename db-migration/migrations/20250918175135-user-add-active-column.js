@@ -11,21 +11,27 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    queryInterface = sequelize.getQueryInterface();
+    if (process.env.ENVIRONMENT == 'test') {
+      queryInterface = sequelize.getQueryInterface();
+    }
+
     await queryInterface.addColumn('users', 'active', {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
     });
   },
 
-  async down (queryInterface, DataTypes) {   
+  async down (queryInterface, DataTypes) {
     /**
      * Add reverting commands here.
      *
      * Example:
      * await queryInterface.dropTable('users');
      */
-    queryInterface = sequelize.getQueryInterface();
+    if (process.env.ENVIRONMENT == 'test') {
+      queryInterface = sequelize.getQueryInterface();
+    }
+
     await queryInterface.removeColumn('users', 'active');
   }
 };

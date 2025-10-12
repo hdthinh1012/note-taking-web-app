@@ -23,8 +23,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'api' });
 });
 
+// Create HTTP server and setup WebSocket
 const server = http.createServer(app);
 setupSocket(server);
+
+// Setup database
+const { db } = require('./utils/database/database');
+db.connect()
+  .then(() => console.log('Database connected'))
+  .catch(err => console.error('Database connection error:', err));
 
 const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {

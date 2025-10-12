@@ -13,7 +13,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.7",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "db-migration": "../db-migration"
   },
   "devDependencies": {
     "jest": "^29.7.0",

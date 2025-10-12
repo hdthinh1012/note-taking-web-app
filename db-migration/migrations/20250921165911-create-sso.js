@@ -5,7 +5,10 @@ const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, DataTypes) {
-    queryInterface = sequelize.getQueryInterface();
+    if (process.env.ENVIRONMENT == 'test') {
+      queryInterface = sequelize.getQueryInterface();
+    }
+
     await queryInterface.createTable('ssos', {
       uuid: {
         type: Sequelize.UUID,
@@ -32,7 +35,10 @@ module.exports = {
     });
   },
   async down(queryInterface, DataTypes) {
-    queryInterface = sequelize.getQueryInterface();
+    if (process.env.ENVIRONMENT == 'test') {
+      queryInterface = sequelize.getQueryInterface();
+    }
+
     await queryInterface.dropTable('ssos');
   }
 };

@@ -11,9 +11,9 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    queryInterface = sequelize.getQueryInterface();
-    console.log('queryInterface', queryInterface);
-    // console.log('Sequelize', Sequelize);
+    if (process.env.ENVIRONMENT == 'test') {
+      queryInterface = sequelize.getQueryInterface();
+    }
 
     await queryInterface.createTable('users', {
       uuid: {
@@ -68,7 +68,12 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    queryInterface = sequelize.getQueryInterface();
+    if (process.env.ENVIRONMENT == 'test') {
+      queryInterface = sequelize.getQueryInterface();
+      console.log('queryInterface', queryInterface);
+    // console.log('Sequelize', Sequelize);
+    }
+
     await queryInterface.dropTable('users');
   }
 };

@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'sso',
+    noPrimaryKey: true
   });
   return sso;
 };
