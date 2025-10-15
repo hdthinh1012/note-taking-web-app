@@ -22,10 +22,12 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.UUID,
     type: DataTypes.STRING,
     sso_account: DataTypes.STRING,
+    verifyLink: DataTypes.STRING,
     verified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-    }
+    },
+    status: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'sso',

@@ -1,57 +1,24 @@
-const express = require('express');
-const cors = require('cors');
-const http = require('http');
-const { setupSocket } = require('./socket');
+const cluster = require('node:cluster');
+const http = require('node:http');
+// const numCPUs = require('node:os').availableParallelism();
+const numCPUs = 4;
+const process = require('node:process');
 
+const runServer = require('./server');
 
-const app = express();
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true
-}));
-app.use(express.json());
+if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
 
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
 
-const authRouter = require('./modules/auth/endpoints');
-const notesRouter = require('./modules/notes/endpoints');
-app.use('/auth', authRouter);
-app.use('/notes', notesRouter);
-
-// Global healthcheck
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'api' });
-});
-
-// Create HTTP server and setup WebSocket
-const server = http.createServer(app);
-setupSocket(server);
-
-// Setup database
-const { db } = require('./utils/database/database');
-db.connect()
-  .then(() => console.log('Database connected'))
-  .catch(err => console.error('Database connection error:', err));
-
-const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
-// const { sendEmail } = require('./utils/email/emailServices');
-
-// // Example usage
-// async function exampleUsage() {
-//     try {
-//         await sendEmail(
-//             'hdthinh001@gmail.com',
-//             'Welcome to Our Service!',
-//             '<p>Hello there,</p><p>Thank you for joining our platform!</p>'
-//         );
-//     } catch (error) {
-//         console.error('Failed to send welcome email:', error);
-//     }
-// }
-
-// exampleUsage();
+    cluster.on('exit', (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died`);
+        console.log('Starting a new worker');
+        cluster.fork();
+    });
+} else {
+    runServer();
+    console.log(`Worker ${process.pid} started`);
+}
