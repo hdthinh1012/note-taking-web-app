@@ -28,21 +28,41 @@ router.post('/register', (req, res) => {
 
 router.get('/verify/:uuid', async (req, res) => {
   const { uuid } = req.params;
-  const ssoEntry = await ssoRepository.getSsoEntryByUuid(uuid);
-  if (!ssoEntry) {
-    return res.status(404).json({ error: 'SSO entry not found' });
-  }
-  const { sso_account, verified } = ssoEntry;
-  if (verified) {
-    return res.status(400).json({ error: 'User already verified' });
-  }
-  let otherSsoEntries = await ssoRepository.getSsosByAccount(sso_account);
-  if (otherSsoEntries.length > 1) {
-    otherSsoEntries = otherSsoEntries.filter(entry => entry.uuid !== uuid);
-    ssoRepository.markSsoAsInvalid(otherSsoEntries.map(entry => entry.uuid));
-  }
-  await ssoRepository.markSsoAsVerified(uuid);
-  res.json({ message: 'User verified successfully' });
+  // const ssoEntry = await ssoRepository.getSsoEntryByUuid(uuid);
+  // if (!ssoEntry) {
+  //   return res.status(404).json({ error: 'SSO entry not found' });
+  // }
+  // const { sso_account, verified } = ssoEntry;
+  // if (verified) {
+  //   return res.status(400).json({ error: 'User already verified' });
+  // }
+  // let otherSsoEntries = await ssoRepository.getSsosByAccount(sso_account);
+
+  /**
+   * Start of critical section
+   */
+  console.log('1');
+  process.send('acquire-lock');
+  console.log('2');
+
+  process.on('lock-acquired', async () => {
+    console.log('Lock acquired in worker', process.pid);
+    setTimeout(() => {
+      process.send('release-lock');
+    }, 5000); // Simulate some processing delay
+    // if (otherSsoEntries.length > 1) {
+    //   otherSsoEntries = otherSsoEntries.filter(entry => entry.uuid !== uuid);
+    //   ssoRepository.markSsoAsInvalid(otherSsoEntries.map(entry => entry.uuid));
+    // }
+    // await ssoRepository.markSsoAsVerified(uuid);
+
+    // process.send('release-lock');
+    /**
+     * End of critical section
+     */
+
+    res.json({ message: 'User verified successfully' });
+  });
 });
 
 module.exports = router;

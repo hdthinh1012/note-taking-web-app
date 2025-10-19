@@ -1,29 +1,35 @@
+var sems = {}
+
 class Semaphore {
-    constructor(max) {
+    constructor(key, max) {
+        if (sems[key]) {
+            return sems[key];
+        }
         this.max = max;
-        this.current = 0;
-        this.queue = [];
+        this.buffer = new SharedArrayBuffer(4);
+        this.view = new Uint8Array(this.buffer);
+        Atomics.store(this.view, 0, max);
+        sems[key] = this;
     }
 
-    async acquire() {
-        if (this.current < this.max) {
-            this.current++;
-            return Promise.resolve();
-        } else {
-            return new Promise((resolve) => {
-                this.queue.push(resolve);
-            }).then(() => {
-                this.current++;
-            });
+    async acquire(handler) {
+        console.log('4');
+        while (true) {
+            const value = Atomics.load(this.view, 0);
+            if (value === 0) {
+                Atomics.wait(this.view, 0, 0);
+                continue;
+            }
+            if (Atomics.compareExchange(this.view, 0, value, value - 1) === value) {
+                handler();
+                break;
+            }
         }
     }
 
     release() {
-        this.current--;
-        if (this.queue.length > 0) {
-            const next = this.queue.shift();
-            next();
-        }
+        Atomics.add(this.view, 0, 1);
+        Atomics.notify(this.view, 0);
     }
 }
 
