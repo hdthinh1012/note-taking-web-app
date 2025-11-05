@@ -13,18 +13,30 @@ if (cluster.isPrimary) {
 
     for (let i = 0; i < numCPUs; i++) {
         const worker = cluster.fork();
-        worker.on('acquire-lock', () => {
-            console.log('5');
+        // worker.on('acquire-lock', () => {
+        //     console.log('5');
+        //     verifySsoSem.acquire(() => {
+        //         console.log('6');
+        //         worker.send('lock-acquired');
+        //     });
+        // });
+
+        // worker.on('release-lock', () => {
+        //     verifySsoSem.release();
+        // });
+    }
+    cluster.on('message', (worker, message) => {
+        if (message === 'acquire-lock') {
+            console.log(`Process ${worker.process.pid} requesting lock`);
             verifySsoSem.acquire(() => {
-                console.log('6');
+                console.log(`Process ${worker.process.pid} acquired lock`);
                 worker.send('lock-acquired');
             });
-        });
-
-        worker.on('release-lock', () => {
+        } else if (message === 'release-lock') {
+            console.log(`Process ${worker.process.pid} releasing lock`);
             verifySsoSem.release();
-        });
-    }
+        }
+    });
 
     cluster.on('exit', (worker, code, signal) => {
         console.log(`Worker ${worker.process.pid} died`);

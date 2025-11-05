@@ -7,16 +7,16 @@ class Semaphore {
         }
         this.max = max;
         this.buffer = new SharedArrayBuffer(4);
-        this.view = new Uint8Array(this.buffer);
+        this.view = new Int32Array(this.buffer);
         Atomics.store(this.view, 0, max);
         sems[key] = this;
     }
 
-    async acquire(handler) {
-        console.log('4');
+    acquire(handler) {
         while (true) {
             const value = Atomics.load(this.view, 0);
             if (value === 0) {
+                console.log('Semaphore is full, waiting...');
                 Atomics.wait(this.view, 0, 0);
                 continue;
             }
