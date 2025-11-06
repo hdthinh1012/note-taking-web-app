@@ -13,17 +13,6 @@ if (cluster.isPrimary) {
 
     for (let i = 0; i < numCPUs; i++) {
         const worker = cluster.fork();
-        // worker.on('acquire-lock', () => {
-        //     console.log('5');
-        //     verifySsoSem.acquire(() => {
-        //         console.log('6');
-        //         worker.send('lock-acquired');
-        //     });
-        // });
-
-        // worker.on('release-lock', () => {
-        //     verifySsoSem.release();
-        // });
     }
     cluster.on('message', (worker, message) => {
         if (message === 'acquire-lock') {

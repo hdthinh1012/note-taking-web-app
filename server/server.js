@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { setupSocket } = require('./socket');
-
+const initializeRedisClient = require('./utils/os/redis/redis').initializeRedisClient;
 
 function runServer() {
   const app = express();
@@ -35,6 +35,11 @@ function runServer() {
   db.connect()
     .then(() => console.log('Database connected'))
     .catch(err => console.error('Database connection error:', err));
+
+  // Initialize Redis client
+  initializeRedisClient()
+    .then(() => console.log('Redis client initialized'))
+    .catch(err => console.error('Redis initialization error:', err));
 
   const PORT = process.env.PORT || 3001;
   server.listen(PORT, () => {
