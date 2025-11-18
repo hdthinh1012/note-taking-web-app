@@ -1,5 +1,5 @@
-import { ssoRepository } from '../repository/ssoRepository.js';
-import { verifySsoSem } from '../../../utils/multithread/child/setup-distributed-semaphore.js';
+const { ssoRepository } = require('../repository/ssoRepository');
+const { verifySsoSem } = require('../../../utils/multithread/child/setup-distributed-semaphore');
 
 class EmailRegistrationService {
     static async verifyUuid(uuid) {

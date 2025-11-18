@@ -1,6 +1,6 @@
-import { redisClient } from "../redis";
+const { redisClient } = require("../redis");
 
-export default class DistributedSemaphore {
+class DistributedSemaphore {
     constructor(options) {
         this.redis = options.redisClient || redisClient;
         this.key = options.key;
@@ -22,10 +22,13 @@ export default class DistributedSemaphore {
             end 
         `;
 
-        const result = await this.redis.eval(script, {
-            keys: [this.key],
-            arguments: [this.permits]
-        });
+        // ioredis eval syntax: eval(script, numKeys, key1, key2, ..., arg1, arg2, ...)
+        const result = await this.redis.eval(
+            script,
+            1, // number of keys
+            this.key, // KEYS[1]
+            this.permits // ARGV[1]
+        );
 
         return result === 1;
     }
@@ -45,7 +48,13 @@ export default class DistributedSemaphore {
             const remainingTime = this.timeout - (Date.now() - start);
 
             if (remainingTime > 500) {
-                await this.redis.blpop(`${this.key}:notify`, Math.min(remainingTime, 30000) / 1000);
+                // ioredis blpop syntax: blpop(key, timeout_in_seconds)
+                // Returns null on timeout, or [key, value] on success
+                const result = await this.redis.blpop(
+                    `${this.key}:notify`, 
+                    Math.min(remainingTime, 30000) / 1000
+                );
+                // Continue loop whether we got a notification or timeout
             } else {
                 throw new Error("Timeout while acquiring semaphore");
             }
@@ -58,6 +67,9 @@ export default class DistributedSemaphore {
             await this.redis.set(this.key, 0);
             throw new Error("Semaphore released more times than it was acquired");
         }
-        await this.redis.rpush(`${this.key}:notify`, `${Date.now()}:${this.processId}`); // Notify one waiting client
+        // Notify one waiting client
+        await this.redis.rpush(`${this.key}:notify`, `${Date.now()}:${this.processId}`);
     }
 }
+
+module.exports = DistributedSemaphore;

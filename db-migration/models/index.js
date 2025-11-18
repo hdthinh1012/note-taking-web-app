@@ -6,7 +6,23 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
+let config = require(__dirname + '/../config/config.json')[env];
+console.log("DB Config 1:", config);
+if (config === undefined) {
+  config = {
+      "username": "noteuser",
+      "password": "notepassword",
+      "database": "notedb",
+      "host": "127.0.0.1",
+      "port": 5432,
+      "dialect": "postgres",
+      "define": {
+        "noPrimaryKey": true
+      }
+    };
+  console.log("DB Config 2:", config);
+}
+
 const db = {};
 
 let sequelize;

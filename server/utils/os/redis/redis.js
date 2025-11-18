@@ -1,21 +1,38 @@
-const { createClient } = require("redis");
+const Redis = require("ioredis");
 
 var redisClient = undefined;
 
 async function initializeRedisClient() {
   // read the Redis connection URL from the envs
-  let redisURL = process.env.REDIS_URI
+  let redisURL = process.env.REDIS_URI;
+  
   if (redisURL) {
-    // create the Redis client object
-    redisClient = createClient({ url: redisURL }).on("error", (e) => {
-      console.error(`Failed to create the Redis client with error:`);
-      console.error(e);
-    });
-
     try {
-      // connect to the Redis server
-      await redisClient.connect();
-      console.log(`Connected to Redis successfully!`);
+      // create the Redis client object using ioredis
+      redisClient = new Redis(redisURL, {
+        retryStrategy: (times) => {
+          const delay = Math.min(times * 50, 2000);
+          return delay;
+        },
+        maxRetriesPerRequest: null,
+        enableReadyCheck: false
+      });
+
+      redisClient.on("error", (e) => {
+        console.error(`Failed to create the Redis client with error:`);
+        console.error(e);
+      });
+
+      redisClient.on("connect", () => {
+        console.log(`Connected to Redis successfully!`);
+      });
+
+      // ioredis connects automatically, but we can wait for ready event
+      await new Promise((resolve, reject) => {
+        redisClient.once('ready', resolve);
+        redisClient.once('error', reject);
+      });
+
       return redisClient;
     } catch (e) {
       console.error(`Connection to Redis failed with error:`);
@@ -28,4 +45,11 @@ function getRedisClient() {
   return redisClient;
 }
 
-module.exports = { initializeRedisClient, redisClient, getRedisClient };
+async function closeRedisClient() {
+  if (redisClient) {
+    await redisClient.quit();
+    redisClient = undefined;
+  }
+}
+
+module.exports = { initializeRedisClient, redisClient, getRedisClient, closeRedisClient };

@@ -1,17 +1,20 @@
-const { createClient } = require("redis");
+// Mock the ioredis module
+const Redis = require("ioredis");
 
-// Mock the redis module
-jest.mock("redis", () => ({
-  createClient: jest.fn()
-}));
+jest.mock("ioredis", () => {
+  return jest.fn();
+});
 
 describe('initializeRedisClient', () => {
-  let mockConnect;
   let mockOn;
+  let mockOnce;
+  let mockQuit;
   let mockRedisClient;
   let originalEnv;
   let consoleErrorSpy;
   let consoleLogSpy;
+  let readyCallback;
+  let errorCallback;
 
   beforeEach(() => {
     // Save original environment
@@ -22,20 +25,31 @@ describe('initializeRedisClient', () => {
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     
     // Setup mock functions
-    mockConnect = jest.fn();
     mockOn = jest.fn().mockReturnThis();
+    mockOnce = jest.fn((event, callback) => {
+      if (event === 'ready') {
+        readyCallback = callback;
+      } else if (event === 'error') {
+        errorCallback = callback;
+      }
+      return mockRedisClient;
+    });
+    mockQuit = jest.fn().mockResolvedValue('OK');
     
     // Create mock Redis client
     mockRedisClient = {
-      connect: mockConnect,
-      on: mockOn
+      on: mockOn,
+      once: mockOnce,
+      quit: mockQuit
     };
     
-    // Mock createClient to return our mock client
-    require("redis").createClient.mockReturnValue(mockRedisClient);
+    // Mock Redis constructor to return our mock client
+    Redis.mockImplementation(() => mockRedisClient);
     
     // Clear any previous calls
     jest.clearAllMocks();
+    readyCallback = null;
+    errorCallback = null;
   });
 
   afterEach(() => {
@@ -64,22 +78,36 @@ describe('initializeRedisClient', () => {
     
     // Mock connection failure
     const connectionError = new Error('getaddrinfo ENOTFOUND wrong-hostname1');
-    mockConnect.mockRejectedValue(connectionError);
 
     // Import fresh module
     const redisModule = require("../redis");
-    const result = await redisModule.initializeRedisClient();
+    
+    // Start initialization (will wait for ready/error event)
+    const initPromise = redisModule.initializeRedisClient();
+    
+    // Trigger error callback
+    if (errorCallback) {
+      errorCallback(connectionError);
+    }
+
+    const result = await initPromise;
 
     // Assertions
-    expect(require("redis").createClient).toHaveBeenCalledWith({ url: 'redis://wrong-hostname1:6379' });
+    expect(Redis).toHaveBeenCalledWith('redis://wrong-hostname1:6379', expect.objectContaining({
+      retryStrategy: expect.any(Function),
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false
+    }));
     expect(mockOn).toHaveBeenCalledWith('error', expect.any(Function));
-    expect(mockConnect).toHaveBeenCalled();
+    expect(mockOn).toHaveBeenCalledWith('connect', expect.any(Function));
+    expect(mockOnce).toHaveBeenCalledWith('ready', expect.any(Function));
+    expect(mockOnce).toHaveBeenCalledWith('error', expect.any(Function));
     expect(consoleErrorSpy).toHaveBeenCalledWith('Connection to Redis failed with error:');
     expect(consoleErrorSpy).toHaveBeenCalledWith(connectionError);
     expect(result).toBeUndefined();
     
     // Verify the client creation was attempted
-    expect(require("redis").createClient).toHaveBeenCalledTimes(1);
+    expect(Redis).toHaveBeenCalledTimes(1);
   });
 
   test('should handle second wrong hostname - connection timeout', async () => {
@@ -88,45 +116,71 @@ describe('initializeRedisClient', () => {
     
     // Mock connection timeout
     const timeoutError = new Error('Connection timeout');
-    mockConnect.mockRejectedValue(timeoutError);
 
     // Import fresh module
     const redisModule = require("../redis");
-    const result = await redisModule.initializeRedisClient();
+    
+    // Start initialization (will wait for ready/error event)
+    const initPromise = redisModule.initializeRedisClient();
+    
+    // Trigger error callback
+    if (errorCallback) {
+      errorCallback(timeoutError);
+    }
+
+    const result = await initPromise;
 
     // Assertions
-    expect(require("redis").createClient).toHaveBeenCalledWith({ url: 'redis://invalid-host2:6379' });
+    expect(Redis).toHaveBeenCalledWith('redis://invalid-host2:6379', expect.objectContaining({
+      retryStrategy: expect.any(Function),
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false
+    }));
     expect(mockOn).toHaveBeenCalledWith('error', expect.any(Function));
-    expect(mockConnect).toHaveBeenCalled();
+    expect(mockOn).toHaveBeenCalledWith('connect', expect.any(Function));
+    expect(mockOnce).toHaveBeenCalledWith('ready', expect.any(Function));
+    expect(mockOnce).toHaveBeenCalledWith('error', expect.any(Function));
     expect(consoleErrorSpy).toHaveBeenCalledWith('Connection to Redis failed with error:');
     expect(consoleErrorSpy).toHaveBeenCalledWith(timeoutError);
     expect(result).toBeUndefined();
     
     // Verify the client creation was attempted
-    expect(require("redis").createClient).toHaveBeenCalledTimes(1);
+    expect(Redis).toHaveBeenCalledTimes(1);
   });
 
   test('should successfully connect with correct hostname', async () => {
     // Set correct hostname
     process.env.REDIS_URI = 'redis://localhost:6379';
-    
-    // Mock successful connection
-    mockConnect.mockResolvedValue();
 
     // Import fresh module
     const redisModule = require("../redis");
-    const result = await redisModule.initializeRedisClient();
+    
+    // Start initialization (will wait for ready/error event)
+    const initPromise = redisModule.initializeRedisClient();
+    
+    // Trigger ready callback
+    if (readyCallback) {
+      readyCallback();
+    }
+
+    const result = await initPromise;
 
     // Assertions
-    expect(require("redis").createClient).toHaveBeenCalledWith({ url: 'redis://localhost:6379' });
+    expect(Redis).toHaveBeenCalledWith('redis://localhost:6379', expect.objectContaining({
+      retryStrategy: expect.any(Function),
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false
+    }));
     expect(mockOn).toHaveBeenCalledWith('error', expect.any(Function));
-    expect(mockConnect).toHaveBeenCalled();
+    expect(mockOn).toHaveBeenCalledWith('connect', expect.any(Function));
+    expect(mockOnce).toHaveBeenCalledWith('ready', expect.any(Function));
+    expect(mockOnce).toHaveBeenCalledWith('error', expect.any(Function));
     expect(consoleLogSpy).toHaveBeenCalledWith('Connected to Redis successfully!');
     expect(consoleErrorSpy).not.toHaveBeenCalled();
     expect(result).toBe(mockRedisClient);
     
     // Verify the client creation was successful
-    expect(require("redis").createClient).toHaveBeenCalledTimes(1);
+    expect(Redis).toHaveBeenCalledTimes(1);
   });
 
   test('should return undefined when REDIS_URI is not set', async () => {
@@ -138,8 +192,8 @@ describe('initializeRedisClient', () => {
     const result = await redisModule.initializeRedisClient();
 
     // Assertions
-    expect(require("redis").createClient).not.toHaveBeenCalled();
-    expect(mockConnect).not.toHaveBeenCalled();
+    expect(Redis).not.toHaveBeenCalled();
+    expect(mockOnce).not.toHaveBeenCalled();
     expect(consoleLogSpy).not.toHaveBeenCalled();
     expect(consoleErrorSpy).not.toHaveBeenCalled();
     expect(result).toBeUndefined();
@@ -148,19 +202,26 @@ describe('initializeRedisClient', () => {
   test('should handle Redis client error event', async () => {
     // Set correct hostname
     process.env.REDIS_URI = 'redis://localhost:6379';
-    
-    // Mock successful connection
-    mockConnect.mockResolvedValue();
 
     // Import fresh module
     const redisModule = require("../redis");
-    await redisModule.initializeRedisClient();
+    
+    // Start initialization
+    const initPromise = redisModule.initializeRedisClient();
+    
+    // Trigger ready callback
+    if (readyCallback) {
+      readyCallback();
+    }
+    
+    await initPromise;
 
     // Verify error handler was registered
     expect(mockOn).toHaveBeenCalledWith('error', expect.any(Function));
     
-    // Get the error handler function
-    const errorHandler = mockOn.mock.calls[0][1];
+    // Get the error handler function (first call to mockOn is for 'error' event)
+    const errorHandlerCall = mockOn.mock.calls.find(call => call[0] === 'error');
+    const errorHandler = errorHandlerCall[1];
     
     // Simulate an error
     const redisError = new Error('Redis connection lost');
@@ -176,25 +237,42 @@ describe('initializeRedisClient', () => {
     
     // First call with correct hostname
     process.env.REDIS_URI = 'redis://localhost:6379';
-    mockConnect.mockResolvedValue();
 
     // Import fresh module
     const redisModule = require("../redis");
-    const result1 = await redisModule.initializeRedisClient();
+    
+    // First initialization
+    const initPromise1 = redisModule.initializeRedisClient();
+    if (readyCallback) {
+      readyCallback();
+    }
+    const result1 = await initPromise1;
     
     // Should return the client
     expect(result1).toBe(mockRedisClient);
-    expect(require("redis").createClient).toHaveBeenCalledTimes(1);
+    expect(Redis).toHaveBeenCalledTimes(1);
     
     // Clear mocks but keep the module loaded
     jest.clearAllMocks();
-    mockConnect.mockResolvedValue();
+    readyCallback = null;
+    
+    // Setup mock again for second call
+    mockOnce.mockImplementation((event, callback) => {
+      if (event === 'ready') {
+        readyCallback = callback;
+      }
+      return mockRedisClient;
+    });
     
     // Second call should create a new client (overwriting the previous one)
-    const result2 = await redisModule.initializeRedisClient();
+    const initPromise2 = redisModule.initializeRedisClient();
+    if (readyCallback) {
+      readyCallback();
+    }
+    const result2 = await initPromise2;
     
     expect(result2).toBe(mockRedisClient);
-    expect(require("redis").createClient).toHaveBeenCalledTimes(1);
+    expect(Redis).toHaveBeenCalledTimes(1);
   });
 
   test('should properly manage hoisted redisClient variable state', async () => {
@@ -206,9 +284,12 @@ describe('initializeRedisClient', () => {
     
     // Set correct hostname and initialize
     process.env.REDIS_URI = 'redis://localhost:6379';
-    mockConnect.mockResolvedValue();
     
-    const result = await redisModule.initializeRedisClient();
+    const initPromise = redisModule.initializeRedisClient();
+    if (readyCallback) {
+      readyCallback();
+    }
+    const result = await initPromise;
     
     // After initialization, the hoisted redisClient variable should be set
     expect(redisModule.getRedisClient()).toBe(mockRedisClient);
@@ -216,15 +297,58 @@ describe('initializeRedisClient', () => {
     
     // Test with connection failure - client should still be set but connection fails
     jest.clearAllMocks();
+    readyCallback = null;
+    errorCallback = null;
+    
+    // Setup mock again
+    mockOnce.mockImplementation((event, callback) => {
+      if (event === 'ready') {
+        readyCallback = callback;
+      } else if (event === 'error') {
+        errorCallback = callback;
+      }
+      return mockRedisClient;
+    });
+    
     process.env.REDIS_URI = 'redis://wrong-host:6379';
     const connectionError = new Error('Connection failed');
-    mockConnect.mockRejectedValue(connectionError);
     
-    const failedResult = await redisModule.initializeRedisClient();
+    const failedInitPromise = redisModule.initializeRedisClient();
+    if (errorCallback) {
+      errorCallback(connectionError);
+    }
+    const failedResult = await failedInitPromise;
     
     // Function returns undefined due to connection failure
     expect(failedResult).toBeUndefined();
     // But the hoisted redisClient variable is still set to the client object
     expect(redisModule.getRedisClient()).toBe(mockRedisClient);
+  });
+
+  test('should successfully close Redis client', async () => {
+    // Set correct hostname
+    process.env.REDIS_URI = 'redis://localhost:6379';
+
+    // Import fresh module
+    const redisModule = require("../redis");
+    
+    // Initialize
+    const initPromise = redisModule.initializeRedisClient();
+    if (readyCallback) {
+      readyCallback();
+    }
+    await initPromise;
+    
+    // Verify client is set
+    expect(redisModule.getRedisClient()).toBe(mockRedisClient);
+    
+    // Close the client
+    await redisModule.closeRedisClient();
+    
+    // Verify quit was called
+    expect(mockQuit).toHaveBeenCalled();
+    
+    // Verify client is now undefined
+    expect(redisModule.getRedisClient()).toBeUndefined();
   });
 });
