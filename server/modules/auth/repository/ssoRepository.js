@@ -8,9 +8,8 @@ const SsoStatus = {
 };
 
 class SsoRepository {
-    constructor() {
-        this.model = Sso;
-        this.db = db;
+    constructor(model) {
+        this.model = model || Sso;
     }
 
     /**
@@ -82,4 +81,4 @@ class SsoRepository {
 }
 
 const ssoRepository = new SsoRepository();
-module.exports = {ssoRepository , SsoStatus};
+module.exports = {ssoRepository , SsoStatus, SsoRepository};

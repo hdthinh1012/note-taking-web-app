@@ -1,24 +1,54 @@
 const cluster = require('cluster');
 const { initializeTestRedisClient, closeTestRedisClient, flushTestRedis } = require('../../redis-test');
 const DistributedSemaphore = require('../distributed-semaphore');
-const { ssoRepository } = require('../../../../../modules/auth/repository/ssoRepository');
+// const { ssoRepository } = require('../../../../../modules/auth/repository/ssoRepository');
 const uuid = require('uuid');
 const { execSync } = require('child_process');
+const { Sequelize } = require('sequelize');
+const { Client } = require('pg');
+const {SsoRepository} = require('../../../../../modules/auth/repository/ssoRepository');
+const {initializeSequelize} = require('db-migration/models/index');
+const config = {
+    "username": "noteuser",
+    "password": "notepassword",
+    "database": "notedb_test",
+    "host": "127.0.0.1",
+    "port": 5433,
+    "dialect": "postgres",
+    "define": {
+        "noPrimaryKey": true
+    }
+};
+
+const models = initializeSequelize(config);
+console.log('Loaded models for test:', Object.keys(models));
+const ssoRepository = new SsoRepository(models.sso);
 
 describe('DistributedSemaphore - Simplified Integration Test', () => {
     let redisClient;
-    const WORKER_COUNT = 2;
-    const SEMAPHORE_PERMITS = 1;
+    const WORKER_COUNT = 5;
+    const SEMAPHORE_PERMITS = 3;
     const CONCURRENT_REQUESTS = 10;
+
+    
+    // Init test database using umzug for migration
+    const client = new Client({
+        user: 'noteuser',
+        password: 'notepassword',
+        host: 'localhost',
+        port: 5433,
+        database: 'notedb_test' // connect to default db
+    });
+    const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433/notedb_test');
 
     beforeAll(async () => {
         // Start Redis test container
         console.log('Starting Redis test container...');
         try {
-            execSync('cd server/__tests__/integration/docker/redis && .\\start.ps1', {
-                stdio: 'inherit',
-                shell: 'powershell.exe'
-            });
+            // execSync('cd server/__tests__/integration/docker/redis || .\\start.ps1', {
+            //     stdio: 'inherit',
+            //     shell: 'powershell.exe'
+            // });
         } catch (error) {
             console.error('Failed to start Redis container:', error);
             throw error;
@@ -32,6 +62,33 @@ describe('DistributedSemaphore - Simplified Integration Test', () => {
         
         // Flush all test data
         await flushTestRedis();
+
+
+
+        // Setup test database
+        await client.end();
+        await sequelize.authenticate();
+        const { Umzug, SequelizeStorage } = require('umzug');
+        const path = require('path');
+
+        const umzug = new Umzug({
+            migrations: {
+                glob: ['migrations/*.js', { cwd: path.join(__dirname, '../../../../../../db-migration')}],
+                params: [
+                    sequelize.getQueryInterface(), 
+                    Sequelize
+                ],
+            },
+            context: sequelize.getQueryInterface(),
+            storage: new SequelizeStorage({sequelize}),
+            logger: console,
+        });
+
+        const migrations = await umzug.pending();
+        console.log('All migrations:', path.join(__dirname, '../../../../../../db-migration/migrations/*.js'));
+        console.log('Pending migrations:', migrations.map(m => m.name));
+
+        await umzug.up();
     }, 60000);
 
     afterAll(async () => {
@@ -41,12 +98,41 @@ describe('DistributedSemaphore - Simplified Integration Test', () => {
         // Stop Redis test container
         console.log('Stopping Redis test container...');
         try {
-            execSync('cd server/__tests__/integration/docker/redis && .\\stop.ps1', {
-                stdio: 'inherit',
-                shell: 'powershell.exe'
-            });
+            // execSync('cd server/__tests__/integration/docker/redis && .\\stop.ps1', {
+            //     stdio: 'inherit',
+            //     shell: 'powershell.exe'
+            // });
         } catch (error) {
             console.error('Failed to stop Redis container:', error);
+        }
+
+        // Close database connection
+        try {
+            const { Umzug, SequelizeStorage } = require('umzug');
+            const path = require('path');
+    
+            const umzug = new Umzug({
+                migrations: {
+                    glob: 'migrations/*.js',
+                    params: [
+                        sequelize.getQueryInterface(), 
+                        Sequelize
+                    ],
+                },
+                context: sequelize.getQueryInterface(),
+                storage: new SequelizeStorage({sequelize}),
+                logger: console,
+            });
+    
+            await umzug.down({ to: 0 });
+            
+            await sequelize.close();
+            await client.connect();
+            // await client.query('DROP DATABASE IF EXISTS notedb_test');
+            await client.end();
+        }
+        catch (error) {
+            console.error('Error during database cleanup:', error);
         }
     }, 30000);
 

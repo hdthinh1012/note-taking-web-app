@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   redis-test:
     build: .
@@ -13,6 +11,11 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    # Podman-specific: Add security options
+    security_opt:
+      - label=disable
+    # Podman-specific: Ensure proper user mapping
+    userns_mode: "keep-id"
 
 networks:
   test-network:

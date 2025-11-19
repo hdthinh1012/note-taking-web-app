@@ -14,7 +14,7 @@ class DistributedSemaphore {
     async _tryAcquire() {
         const script = `
             local current = tonumber(redis.call("GET", KEYS[1]) or "0")
-            if current < tonumber(ARGV[1]) then
+            if current < tonumber(ARGV[1]) + 1 then
                 redis.call("INCR", KEYS[1])
                 return 1
             else

@@ -1,6 +1,6 @@
-const models = require('db-migration/models');
+const {models} = require('db-migration/models');
 
-console.log('Loaded models:', Object.keys(models));
+// console.log('Loaded models:', Object.keys(models));
 const {sequelize, Sequelize} = require('db-migration');
 
 /**
@@ -9,10 +9,10 @@ const {sequelize, Sequelize} = require('db-migration');
  */
 
 class DatabaseManager {
-  constructor() {
-    this.sequelize = sequelize;
+  constructor(sequelizeInstance, modelsInstance) {
+    this.sequelize = sequelizeInstance || sequelize;
     this.Sequelize = Sequelize;
-    this.models = models;
+    this.models = modelsInstance || models;
     this.isConnected = false;
   }
 
@@ -130,6 +130,7 @@ const databaseManager = new DatabaseManager();
 module.exports = {
   // Database manager instance
   db: databaseManager,
+  DatabaseManager,
   
   // Direct access to Sequelize instance and models (for backward compatibility)
   sequelize,
