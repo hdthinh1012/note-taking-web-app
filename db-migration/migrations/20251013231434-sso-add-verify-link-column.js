@@ -4,7 +4,7 @@ const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up (queryInterface, DataTypes) {
     /**
      * Add altering commands here.
      *
@@ -19,7 +19,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down (queryInterface, DataTypes) {
     /**
      * Add reverting commands here.
      *

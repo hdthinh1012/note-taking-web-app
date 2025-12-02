@@ -1,8 +1,10 @@
 'use strict';
+const {Sequelize} = require('sequelize');
+const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433/notedb_test');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up (queryInterface, DataTypes) {
     /**
      * Add altering commands here.
      *
@@ -17,7 +19,7 @@ module.exports = {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down (queryInterface, DataTypes) {
     /**
      * Add reverting commands here.
      *
@@ -27,6 +29,6 @@ module.exports = {
     if (process.env.ENVIRONMENT == 'test') {
       queryInterface = sequelize.getQueryInterface();
     }
-    await queryInterface.removeColumn('ssos', 'verifyLink');
+    await queryInterface.removeColumn('ssos', 'status');
   }
 };

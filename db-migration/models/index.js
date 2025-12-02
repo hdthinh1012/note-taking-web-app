@@ -7,7 +7,7 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 let config = require(__dirname + '/../config/config.json')[env];
-console.log("DB Config 1:", config);
+// console.log("DB Config 1:", config);
 if (config === undefined) {
   config = {
       "username": "noteuser",
@@ -20,40 +20,44 @@ if (config === undefined) {
         "noPrimaryKey": true
       }
     };
-  console.log("DB Config 2:", config);
+  // console.log("DB Config 2:", config);
 }
 
-const db = {};
+const models = {};
 
 let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
 
-fs
-  .readdirSync(__dirname)
-  .filter(file => {
-    return (
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.slice(-3) === '.js' &&
-      file.indexOf('.test.js') === -1
-    );
-  })
-  .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-    db[model.name] = model;
+function initializeSequelize(configInput = config) {
+  if (configInput.use_env_variable) {
+    sequelize = new Sequelize(process.env[configInput.use_env_variable], configInput);
+  } else {
+    sequelize = new Sequelize(configInput.database, configInput.username, configInput.password, configInput);
+  }
+
+  fs
+    .readdirSync(__dirname)
+    .filter(file => {
+      return (
+        file.indexOf('.') !== 0 &&
+        file !== basename &&
+        file.slice(-3) === '.js' &&
+        file.indexOf('.test.js') === -1
+      );
+    })
+    .forEach(file => {
+      const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+      models[model.name] = model;
+    });
+
+  Object.keys(models).forEach(modelName => {
+    if (models[modelName].associate) {
+      models[modelName].associate(models);
+    }
   });
 
-Object.keys(db).forEach(modelName => {
-  if (db[modelName].associate) {
-    db[modelName].associate(db);
-  }
-});
+  models.sequelize = sequelize;
+  models.Sequelize = Sequelize;
+  return models;
+}
 
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-
-module.exports = db;
+module.exports = {models, initializeSequelize};

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "jest",
-    "test:redis:semaphore": "jest utils/os/redis/redis-semaphore/__tests__/distributed-semaphore.integration.test.js"
+    "test:redis:semaphore": "jest utils/os/redis/redis-semaphore/__tests__/distributed-semaphore.integration.test.js",
+    "test:redis:semaphore:debug": "node --inspect-brk node_modules/jest/bin/jest.js --runInBand utils/os/redis/redis-semaphore/__tests__/distributed-semaphore.integration.test.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
