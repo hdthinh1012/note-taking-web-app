@@ -4,7 +4,7 @@ class DistributedSemaphore {
     constructor(options) {
         this.redis = options.redisClient || redisClient;
         this.key = options.key;
-        this.permits = options.permits;
+        this.permits = options.permits || 1;
         this.timeout = options.timeout || 30000; // default timeout 30 seconds
         this.retryDelay = options.retryDelay || 100; // default retry delay 100 ms
         this.jitter = options.jitter || 50; // default jitter 50 ms, to avoid thundering herd

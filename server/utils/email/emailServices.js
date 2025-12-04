@@ -1,8 +1,8 @@
 require('dotenv').config(); // Load environment variables
 
-const nodemailer = require('nodemailer');
+import { createTransport } from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
+const transporter = createTransport({
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT,
     secure: process.env.EMAIL_PORT == 465, // Use true for 465 (SSL), false for other ports (TLS)
@@ -29,4 +29,4 @@ async function sendEmail(to, subject, htmlContent) {
     }
 }
 
-module.exports = { sendEmail };
+export default { sendEmail };
