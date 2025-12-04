@@ -1,5 +1,5 @@
 // Authentication Middleware (verify JWT)
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -24,4 +24,4 @@ function authorizeRole(requiredRole) {
     };
 }
 
-module.exports = { authenticateToken, authorizeRole };
+export { authenticateToken, authorizeRole };

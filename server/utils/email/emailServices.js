@@ -1,4 +1,5 @@
-require('dotenv').config(); // Load environment variables
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables
 
 import { createTransport } from 'nodemailer';
 
@@ -29,4 +30,4 @@ async function sendEmail(to, subject, htmlContent) {
     }
 }
 
-export default { sendEmail };
+export { sendEmail };

@@ -1,7 +1,8 @@
-const {models} = require('db-migration/models');
+import dbMigration from 'db-migration/index.js';
+import dbModels from 'db-migration/models/index.js';
 
-// console.log('Loaded models:', Object.keys(models));
-const {sequelize, Sequelize} = require('db-migration');
+const { sequelize, Sequelize } = dbMigration;
+const { models } = dbModels;
 
 /**
  * Database configuration for the Express server
@@ -126,39 +127,48 @@ class DatabaseManager {
 // Create singleton instance
 const databaseManager = new DatabaseManager();
 
+// Database manager instance
+const db = databaseManager;
+
+// Convenient model exports (destructured for easy access)
+const User = models.User;
+const Note = models.Note;
+const Category = models.category;
+const Sso = models.sso;
+
+// Helper functions
+const connect = () => databaseManager.connect();
+const disconnect = () => databaseManager.disconnect();
+const isHealthy = () => databaseManager.isHealthy();
+const testConnection = () => databaseManager.testConnection();
+
+// Transaction helper
+const transaction = async (callback) => {
+  const t = await databaseManager.startTransaction();
+  try {
+    const result = await callback(t);
+    await t.commit();
+    return result;
+  } catch (error) {
+    await t.rollback();
+    throw error;
+  }
+};
+
 // Export both the manager and direct access to common properties
-module.exports = {
-  // Database manager instance
-  db: databaseManager,
+export {
+  db,
   DatabaseManager,
-  
-  // Direct access to Sequelize instance and models (for backward compatibility)
   sequelize,
   Sequelize,
   models,
-  
-  // Convenient model exports (destructured for easy access)
-  User: models.User,
-  Note: models.Note,
-  Category: models.category,
-  Sso: models.sso,
-  
-  // Helper functions
-  connect: () => databaseManager.connect(),
-  disconnect: () => databaseManager.disconnect(),
-  isHealthy: () => databaseManager.isHealthy(),
-  testConnection: () => databaseManager.testConnection(),
-  
-  // Transaction helper
-  transaction: async (callback) => {
-    const t = await databaseManager.startTransaction();
-    try {
-      const result = await callback(t);
-      await t.commit();
-      return result;
-    } catch (error) {
-      await t.rollback();
-      throw error;
-    }
-  }
+  User,
+  Note,
+  Category,
+  Sso,
+  connect,
+  disconnect,
+  isHealthy,
+  testConnection,
+  transaction
 };

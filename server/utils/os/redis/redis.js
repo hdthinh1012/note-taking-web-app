@@ -1,15 +1,15 @@
-const Redis = require("ioredis");
-
-var redisClient = undefined;
+import Redis from 'ioredis';
 
 async function initializeRedisClient() {
+  console.log("Initializing Redis client...");
   // read the Redis connection URL from the envs
   let redisURL = process.env.REDIS_URI;
+  console.log("Redis URL from env:", redisURL);
   
   if (redisURL) {
     try {
       // create the Redis client object using ioredis
-      redisClient = new Redis(redisURL, {
+      let redisClient = new Redis(redisURL, {
         retryStrategy: (times) => {
           const delay = Math.min(times * 50, 2000);
           return delay;
@@ -41,15 +41,10 @@ async function initializeRedisClient() {
   }
 }
 
-function getRedisClient() {
-  return redisClient;
-}
-
-async function closeRedisClient() {
+async function closeRedisClient(redisClient) {
   if (redisClient) {
     await redisClient.quit();
-    redisClient = undefined;
   }
 }
 
-module.exports = { initializeRedisClient, redisClient, getRedisClient, closeRedisClient };
+export { initializeRedisClient, closeRedisClient };

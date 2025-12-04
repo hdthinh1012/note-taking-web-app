@@ -1,4 +1,4 @@
-const { Server } = require('socket.io');
+import { Server } from 'socket.io';
 
 
 function setupSocket(server) {
@@ -19,4 +19,4 @@ function setupSocket(server) {
   });
 }
 
-module.exports = { setupSocket };
+export { setupSocket };

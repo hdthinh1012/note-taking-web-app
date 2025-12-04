@@ -1,8 +1,7 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-// const authenticateToken = require('../middleware/jwt');
-const {authorizeRole, authenticateToken} = require('../middleware/jwt');
+import { authorizeRole, authenticateToken } from '../middleware/jwt.js';
 
 // Example healthcheck for auth domain
 router.get('/health', (req, res) => {
@@ -15,7 +14,7 @@ router.get('/protected', authenticateToken, authorizeRole('user'), (req, res) =>
 
 // Add more auth endpoints here
 // Attach emailRegistration sub-router
-const emailRegistrationRouter = require('./emailRegistration');
+import emailRegistrationRouter from './emailRegistration/index.js';
 router.use('/email-registration', emailRegistrationRouter);
 
-module.exports = router;
+export default router;

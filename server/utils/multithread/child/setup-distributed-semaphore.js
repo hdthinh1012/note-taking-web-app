@@ -1,9 +1,11 @@
-const DistributedSemaphore = require("../../os/redis/redis-semaphore/distributed-semaphore");
+import DistributedSemaphore from '../../os/redis/redis-semaphore/distributed-semaphore.js';
 
-const verifySsoSem = new DistributedSemaphore({
+const verifySsoSem = await DistributedSemaphore.create({
     key: "sso-email-registration-service-verify-uuid-semaphore",
     permits: 1,
     timeout: 10000 // 10 seconds
 });
 
-module.exports = { verifySsoSem };
+console.log("verifySsoSem initialized:", verifySsoSem);
+
+export { verifySsoSem };

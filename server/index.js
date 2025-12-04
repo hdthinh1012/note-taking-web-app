@@ -1,9 +1,10 @@
-const cluster = require('node:cluster');
-// const numCPUs = require('node:os').availableParallelism();
+import cluster from 'node:cluster';
+// import { availableParallelism } from 'node:os';
+// const numCPUs = availableParallelism();
 const numCPUs = 2;
-const process = require('node:process');
-const runServer = require('./server');
-const dotenv = require('dotenv');
+import process from 'node:process';
+import runServer from './server.js';
+import dotenv from 'dotenv';
 dotenv.config();
 
 if (cluster.isPrimary) {

@@ -1,8 +1,12 @@
-const express = require('express');
-const cors = require('cors');
-const http = require('http');
-const { setupSocket } = require('./socket');
-const initializeRedisClient = require('./utils/os/redis/redis').initializeRedisClient;
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import { setupSocket } from './socket/index.js';
+import { initializeRedisClient } from './utils/os/redis/redis.js';
+import { db } from './utils/database/database.js';
+import authRouter from './modules/auth/endpoints/index.js';
+import notesRouter from './modules/notes/endpoints/index.js';
+import process from 'node:process';
 
 function runServer() {
   const app = express();
@@ -13,15 +17,11 @@ function runServer() {
   }));
   app.use(express.json());
 
-
-  const authRouter = require('./modules/auth/endpoints');
-  const notesRouter = require('./modules/notes/endpoints');
   app.use('/auth', authRouter);
   app.use('/notes', notesRouter);
 
   // Global healthcheck
   app.get('/health', async (req, res) => {
-    const process = require('node:process');
     await new Promise(resolve => setTimeout(resolve, 5000));
     res.json({ status: 'ok', service: 'api', pid: process.pid });
   });
@@ -31,7 +31,6 @@ function runServer() {
   setupSocket(server);
 
   // Setup database
-  const { db } = require('./utils/database/database');
   db.connect()
     .then(() => console.log('Database connected'))
     .catch(err => console.error('Database connection error:', err));
@@ -48,7 +47,7 @@ function runServer() {
 }
 
 
-// const { sendEmail } = require('./utils/email/emailServices');
+// import { sendEmail } from './utils/email/emailServices.js';
 
 // // Example usage
 // async function exampleUsage() {
@@ -65,4 +64,4 @@ function runServer() {
 
 // exampleUsage();
 
-module.exports = runServer;
+export default runServer;

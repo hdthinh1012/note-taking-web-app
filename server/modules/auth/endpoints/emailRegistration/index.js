@@ -1,11 +1,12 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const ssoRepository = require('../../repository/ssoRepository');
-const uuid = require('uuid');
-const { verify } = require('jsonwebtoken');
-const { sendEmail } = require('../../../../utils/email/emailServices');
-const sso = require('db-migration/models/sso');
-const {EmailRegistrationService} = require('../../services/emailRegistration');
+import { ssoRepository } from '../../repository/ssoRepository.js';
+import { v4 as uuidv4 } from 'uuid';
+import jsonwebtoken from 'jsonwebtoken';
+import { sendEmail } from '../../../../utils/email/emailServices.js';
+import { EmailRegistrationService } from '../../services/emailRegistration.js';
+
+const { verify } = jsonwebtoken;
 
 // Healthcheck endpoint
 router.get('/healthcheck', (req, res) => {
@@ -17,7 +18,7 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ error: 'Email is required' });
   }
   const { email } = req.body;
-  const uuidAssigned = uuid.v4();
+  const uuidAssigned = uuidv4();
 
   const verifyLink = `http://localhost:3001/auth/email-registration/verify/${uuidAssigned}`;
   ssoRepository.createSsoEntry({ uuid: uuidAssigned, userId: null, type: 'email', sso_account: email, verified: false, verifyLink, status: 'pending' });
@@ -33,4 +34,4 @@ router.get('/verify/:uuid', async (req, res) => {
   res.json({ message: 'User verified successfully' });
 });
 
-module.exports = router;
+export default router;

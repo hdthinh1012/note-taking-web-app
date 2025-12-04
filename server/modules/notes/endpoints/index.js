@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 // Example healthcheck for notes domain
@@ -8,4 +8,4 @@ router.get('/health', (req, res) => {
 
 // Add more notes endpoints here
 
-module.exports = router;
+export default router;

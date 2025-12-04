@@ -1,14 +1,20 @@
-const { redisClient } = require("../redis");
+import { initializeRedisClient } from '../redis.js';
 
 class DistributedSemaphore {
-    constructor(options) {
-        this.redis = options.redisClient || redisClient;
+    constructor(options, redisClient) {
+        this.redis = redisClient;
         this.key = options.key;
         this.permits = options.permits || 1;
         this.timeout = options.timeout || 30000; // default timeout 30 seconds
         this.retryDelay = options.retryDelay || 100; // default retry delay 100 ms
         this.jitter = options.jitter || 50; // default jitter 50 ms, to avoid thundering herd
         this.processId = process.pid;
+    }
+
+    static async create(options) {
+        const redisClient =  await initializeRedisClient();
+        console.log("DistributedSemaphore using Redis client:", redisClient);
+        return new DistributedSemaphore(options, redisClient);
     }
 
     async _tryAcquire() {
@@ -72,4 +78,4 @@ class DistributedSemaphore {
     }
 }
 
-module.exports = DistributedSemaphore;
+export default DistributedSemaphore;

@@ -1,4 +1,4 @@
-const {db, Sso} = require('../../../utils/database/database');
+import { db, Sso } from '../../../utils/database/database.js';
 
 const SsoStatus = {
     PENDING: 'pending',
@@ -81,4 +81,4 @@ class SsoRepository {
 }
 
 const ssoRepository = new SsoRepository();
-module.exports = {ssoRepository , SsoStatus, SsoRepository};
+export { ssoRepository, SsoStatus, SsoRepository };

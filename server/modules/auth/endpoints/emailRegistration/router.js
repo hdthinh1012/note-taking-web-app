@@ -1,3 +1,3 @@
-const emailRegistrationRouter = require('./emailRegistration');
+import emailRegistrationRouter from './index.js';
 
-module.exports = emailRegistrationRouter;
+export default emailRegistrationRouter;
