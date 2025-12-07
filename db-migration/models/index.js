@@ -7,7 +7,6 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 let config = require(__dirname + '/../config/config.json')[env];
-// console.log("DB Config 1:", config);
 if (config === undefined) {
   config = {
       "username": "noteuser",

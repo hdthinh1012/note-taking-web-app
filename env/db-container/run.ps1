@@ -1,0 +1,1 @@
+podman run -d --name ntwa-db -p 5432:5432 localhost/ntwa-db-img:latest

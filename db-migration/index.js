@@ -1,6 +1,14 @@
 const { Sequelize } = require('sequelize');
+const dotenv = require('dotenv');
 
-const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5432/notedb');
+dotenv.config();
+
+console.log('Database URL:', process.env.DATABASE_URL);
+
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  logging: false,
+});
 
 async function testConnection() {
   try {

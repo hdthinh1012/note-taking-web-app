@@ -1,1 +1,0 @@
-podman build -t note-db-image-test .

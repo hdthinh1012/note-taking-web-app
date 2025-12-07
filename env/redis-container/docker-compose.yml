@@ -1,0 +1,22 @@
+services:
+  redis-test:
+    build: .
+    container_name: ntw-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    # Podman-specific: Add security options
+    security_opt:
+      - label=disable
+    # Podman-specific: Ensure proper user mapping
+    userns_mode: "keep-id"
+
+networks:
+  test-network:
+    driver: bridge

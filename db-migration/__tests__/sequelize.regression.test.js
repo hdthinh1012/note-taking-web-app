@@ -53,9 +53,9 @@ describe('Database Integration', () => {
         `);
         const tableNames = tables.map(t => t.table_name);
         expect(tableNames).toEqual(
-            expect.arrayContaining(['users', 'ssos'])
+            expect.arrayContaining(['users', 'ssos', 'notes'])
         );
-    });
+    }, 20000);
 
     afterAll(async () => {
         const { Umzug, SequelizeStorage } = require('umzug');

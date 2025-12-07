@@ -1,0 +1,18 @@
+services:
+  redis-test:
+    image: redis-test-image
+    build: .
+    container_name: redis-test-semaphore
+    ports:
+      - "6380:6380"
+    networks:
+      - test-network
+    # Podman-specific: Add security options
+    security_opt:
+      - label=disable
+    # Podman-specific: Ensure proper user mapping
+    userns_mode: "keep-id"
+
+networks:
+  test-network:
+    driver: bridge

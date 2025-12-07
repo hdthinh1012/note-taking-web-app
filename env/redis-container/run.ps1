@@ -1,0 +1,1 @@
+podman run -d --name ntwa-redis -p 6379:6379 localhost/ntwa-redis-img:latest

@@ -3,7 +3,7 @@ const { Sequelize } = require('sequelize');
 
 describe('Database Integration', () => {
   it('should connect to the database and run a simple query', async () => {
-    const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5432/notedb');
+    const sequelize = new Sequelize('postgres://noteuser:notepassword@localhost:5433/notedb_test');
     await expect(sequelize.authenticate()).resolves.not.toThrow();
 
     const [result] = await sequelize.query('SELECT 1+1 AS result');

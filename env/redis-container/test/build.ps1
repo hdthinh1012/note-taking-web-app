@@ -1,0 +1,1 @@
+podman build -t localhost/ntwa-redis-img-test:latest .
