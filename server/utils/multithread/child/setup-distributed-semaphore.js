@@ -6,6 +6,4 @@ const verifySsoSem = await DistributedSemaphore.create({
     timeout: 10000 // 10 seconds
 });
 
-console.log("verifySsoSem initialized:", verifySsoSem);
-
 export { verifySsoSem };
