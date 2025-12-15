@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -12,4 +12,4 @@ function createJwtToken(payload, options = {}) {
   return jwt.sign(payload, SECRET_KEY, { expiresIn: '1h', ...options });
 }
 
-module.exports = { createJwtToken };
+export { createJwtToken };

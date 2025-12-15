@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   testEnvironment: 'node',
   // Allow Jest to transform ESM modules like uuid
   transformIgnorePatterns: [

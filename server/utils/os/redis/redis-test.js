@@ -1,4 +1,4 @@
-const Redis = require('ioredis');
+import Redis from 'ioredis';
 
 let testRedisClient = null;
 
@@ -54,9 +54,13 @@ async function flushTestRedis() {
     }
 }
 
-module.exports = {
+export {
     initializeTestRedisClient,
     closeTestRedisClient,
     flushTestRedis,
-    getTestRedisClient: () => testRedisClient
+    getTestRedisClient
 };
+
+function getTestRedisClient() {
+    return testRedisClient;
+}

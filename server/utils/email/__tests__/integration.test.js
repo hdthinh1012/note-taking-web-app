@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 test('sendEmail integration with Ethereal', async () => {
   const testAccount = await nodemailer.createTestAccount();
