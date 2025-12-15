@@ -41,3 +41,16 @@ Thumbs.db
 
 **/node_modules/**
 **/dist/**
+
+# Turborepo
+.turbo
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+yarn-error.log

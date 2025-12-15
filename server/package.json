@@ -1,15 +1,16 @@
 {
-  "name": "note-taking-server",
+  "name": "@ntwa/server",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "jest"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "db-migration": "../db-migration",
+    "@ntwa/db-migration": "./db-migration",
     "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "ioredis": "^5.8.0",

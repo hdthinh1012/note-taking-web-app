@@ -1,0 +1,13 @@
+{
+  "name": "env",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "buildImages": "cd ./db-container && ./build-image.sh && cd ../redis-container && ./build-image.sh",
+    "startTestEnvironment": "cd ./db-container && ./start-test-environment.sh && cd ../redis-container && ./start-test-environment.sh",
+    "stopTestEnvironment": "cd ./db-container && ./stop-test-environment.sh && cd ../redis-container && ./stop-test-environment.sh"
+  },
+  "author": "",
+  "license": "ISC"
+}
