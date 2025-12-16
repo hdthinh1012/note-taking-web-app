@@ -12,7 +12,7 @@ class DistributedSemaphore {
     }
 
     static async create(options) {
-        const redisClient =  await initializeRedisClient();
+        const redisClient = await initializeRedisClient();
         console.log("DistributedSemaphore using Redis client:", redisClient);
         return new DistributedSemaphore(options, redisClient);
     }

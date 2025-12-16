@@ -14,7 +14,7 @@ function initializeTestRedisClient(options = {}) {
 
     testRedisClient = new Redis({
         host: options.host || 'localhost',
-        port: options.port || 6380,
+        port: options.port || 6379,
         retryStrategy: (times) => {
             const delay = Math.min(times * 50, 2000);
             return delay;

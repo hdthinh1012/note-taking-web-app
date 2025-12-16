@@ -9,24 +9,25 @@
     "test": "jest"
   },
   "dependencies": {
-    "cors": "^2.8.5",
     "@ntwa/db-migration": "./db-migration",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.18.2",
     "ioredis": "^5.8.0",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^7.0.7",
-    "socket.io": "^4.7.5",
-    "uuid": "^13.0.0",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
-    "umzug": "^3.8.2"
+    "socket.io": "^4.7.5",
+    "umzug": "^3.8.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
     "babel-jest": "^30.2.0",
+    "babel-plugin-transform-import-meta": "^2.3.3",
     "jest": "^29.7.0",
     "socket.io-client": "^4.7.5",
     "supertest": "^6.3.3"
