@@ -1,7 +1,7 @@
 import cluster from 'cluster';
 import process from 'process';
 import fs from 'fs';
-import DistributedSemaphore from '../distributed-semaphore.js';
+import DistributedSemaphore from './distributed-semaphore.js';
 
 const numCPUs = 2;
 
@@ -29,7 +29,6 @@ if (cluster.isPrimary) {
     const semaphore = await DistributedSemaphore.create({
         key: 'sem-test-1'
     });
-    console.log("Semaphore created in worker", semaphore);
     acquire_write(semaphore, filePath, getRandChar()).then(() => {
         console.log(`Worker ${process.pid} died`);
         process.exit(0);

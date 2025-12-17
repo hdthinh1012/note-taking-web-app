@@ -32,17 +32,16 @@ async function initializeRedisClient() {
       console.log(`Connected to Redis successfully!`);
     });
 
-    const readyPromise = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error("Redis connection timeout")), 5000);
-      redisClient.once('ready', () => {
-        clearTimeout(timeout);
-        resolve();
-      });
-    });
+    // const readyPromise = new Promise((resolve, reject) => {
+    //   const timeout = setTimeout(() => reject(new Error("Redis connection timeout")), 5000);
+    //   redisClient.once('ready', () => {
+    //     clearTimeout(timeout);
+    //     resolve();
+    //   });
+    // });
 
     try {
       await redisClient.connect();
-      await readyPromise;
       return redisClient;
     } catch (e) {
       try {

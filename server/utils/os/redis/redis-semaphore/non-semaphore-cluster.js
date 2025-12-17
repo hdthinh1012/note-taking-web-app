@@ -1,9 +1,7 @@
 import cluster from 'cluster';
 import process from 'process';
 import fs from 'fs';
-import { initializeRedisClient } from '../../redis';
-import DistributedSemaphore from '../distributed-semaphore';
-import { get } from 'http';
+import DistributedSemaphore from './distributed-semaphore.js';
 
 const numCPUs = 2;
 

@@ -13,14 +13,13 @@ class DistributedSemaphore {
 
     static async create(options) {
         const redisClient = await initializeRedisClient();
-        console.log("DistributedSemaphore using Redis client:", redisClient);
         return new DistributedSemaphore(options, redisClient);
     }
 
     async _tryAcquire() {
         const script = `
             local current = tonumber(redis.call("GET", KEYS[1]) or "0")
-            if current < tonumber(ARGV[1]) + 1 then
+            if current < tonumber(ARGV[1]) then
                 redis.call("INCR", KEYS[1])
                 return 1
             else

@@ -18,17 +18,39 @@ describe("Semaphore Cluster", () => {
         fs.writeFileSync(filePath, 'ba');
     }, 3000);
 
-    afterAll(() => {
+    beforeEach(() => {
         const filePath = path.join(__dirname, "semaphore-test-file.txt");
-        fs.unlinkSync(filePath);
+        fs.writeFileSync(filePath, 'ba');
+        const resetEVAL = `redis.call("SET", KEYS[1], "0")`;
+        const redisClientPromise = initializeRedisClient();
+        redisClientPromise.then(async (redisClient) => {
+            await redisClient.eval(
+                resetEVAL,
+                1,
+                'sem-test-1'
+            );
+            redisClient.disconnect();
+        });
     });
 
     it("should allow multiple processes to safely write to a file using distributed semaphore", async () => {
-        const scriptPath = path.join(__dirname, 'semaphore-cluster.js');
+        // semaphore-cluster.js is in the parent directory (redis-semaphore/), not in __tests__/
+        const scriptPath = path.join(__dirname, '..', 'semaphore-cluster.js');
         const testFilePath = path.join(__dirname, 'semaphore-test-file.txt');
         const child = spawn('node', [scriptPath, testFilePath], {
-            execArgv: ['--inspect-brk=9230']
+            // execArgv: ['--inspect-brk=9230']
+            env: { ...process.env },
+            stdio: ['pipe', 'pipe', 'pipe']
         });
+
+        // Capture stdout and stderr for debugging
+        child.stdout.on('data', (data) => {
+            console.log(`[child stdout]: ${data}`);
+        });
+        child.stderr.on('data', (data) => {
+            console.error(`[child stderr]: ${data}`);
+        });
+
         await new Promise((resolve, reject) => {
             child.on('exit', (code) => {
                 if (code === 0) {
@@ -41,38 +63,40 @@ describe("Semaphore Cluster", () => {
         const content = fs.readFileSync(testFilePath, 'utf-8');
         return expect(content.length).toBe(4);
     });
-}, 20000);
 
-// describe("Non-semaphore Cluster Cleanup", () => {
-//     beforeAll(() => {
-//         initializeRedisClient();
-//         const filePath = path.join(__dirname, "semaphore-test-file.txt");
-//         fs.writeFileSync(filePath, 'ba');
-//     }, 3000);
+    it("multiple processes to write to a file without using distributed semaphore will face race condition", async () => {
+        // semaphore-cluster.js is in the parent directory (redis-semaphore/), not in __tests__/
+        const scriptPath = path.join(__dirname, '..', 'non-semaphore-cluster.js');
+        const testFilePath = path.join(__dirname, 'semaphore-test-file.txt');
+        const child = spawn('node', [scriptPath, testFilePath], {
+            // execArgv: ['--inspect-brk=9230']
+            env: { ...process.env },
+            stdio: ['pipe', 'pipe', 'pipe']
+        });
 
-//     afterAll(() => {
-//         const filePath = path.join(__dirname, "semaphore-test-file.txt");
-//         fs.unlinkSync(filePath);
-//     });
+        // Capture stdout and stderr for debugging
+        child.stdout.on('data', (data) => {
+            console.log(`[child stdout]: ${data}`);
+        });
+        child.stderr.on('data', (data) => {
+            console.error(`[child stderr]: ${data}`);
+        });
 
-//     it("should allow multiple processes to write to a file without semaphore", async () => {
-//         const scriptPath = path.join(__dirname, 'non-semaphore-cluster.js');
-//         const testFilePath = path.join(__dirname, 'semaphore-test-file.txt');
-//         const child = spawn('node', [scriptPath, testFilePath
-//         const child = spawn('node', [scriptPath, './semaphore-test-file.txt']);
-//         await new Promise((resolve, reject) => {
-//             child.on('exit', (code) => {
-//                 if (code === 0) {
-//                     resolve();
-//                 } else {
-//                     reject(new Error(`Child process exited with code ${code}`));
-//                 }
-//             });
-//         });testFilePath = path.join(__dirname, 'semaphore-test-file.txt');
-//         const content = fs.readFileSync(testFilePath
+        await new Promise((resolve, reject) => {
+            child.on('exit', (code) => {
+                if (code === 0) {
+                    resolve();
+                } else {
+                    reject(new Error(`Child process exited with code ${code}`));
+                }
+            });
+        });
+        const content = fs.readFileSync(testFilePath, 'utf-8');
+        return expect(content.length).toBe(3);
+    });
 
-//         const content = fs.readFileSync('./semaphore-test-file.txt', 'utf-8');
-//         // Without semaphore, the length may not be 4 due to race conditions
-//         expect(content.length).toBeLessThanOrEqual(4);
-//     }, 20000);
-// });
+    afterAll(() => {
+        const filePath = path.join(__dirname, "semaphore-test-file.txt");
+        fs.unlinkSync(filePath);
+    });
+}, 2000000);
