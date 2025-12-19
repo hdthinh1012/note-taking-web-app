@@ -34,10 +34,12 @@ if (cluster.isPrimary) {
 }
 
 async function non_acquire_write(semaphore, filePath, char) {
-    await new Promise((resolve) => setTimeout(resolve(), 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const content = fs.readFileSync(filePath);
-    await new Promise((resolve) => setTimeout(resolve(), 3000));
+    console.log(`Worker ${process.pid} read content: ${content}`);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     fs.writeFileSync(filePath, content + char);
+    console.log(`Worker ${process.pid} wrote content: ${content + char}`);
 }
 
 function getRandChar() {
