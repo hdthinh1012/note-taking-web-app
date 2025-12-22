@@ -14,24 +14,34 @@ router.get('/healthcheck', (req, res) => {
 });
 
 router.post('/register', (req, res) => {
-  if (!req.body.email) {
-    return res.status(400).json({ error: 'Email is required' });
+  try {
+    if (!req.body.email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    const { email } = req.body;
+    const uuidAssigned = uuidv4();
+
+    const verifyLink = `http://localhost:3001/auth/email-registration/verify/${uuidAssigned}`;
+    ssoRepository.createSsoEntry({ uuid: uuidAssigned, userId: null, type: 'email', sso_account: email, verified: false, verifyLink, status: 'pending' });
+
+    sendEmail(email, 'Email Verification', `Please verify your email by clicking on the following link: ${verifyLink}`);
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-  const { email } = req.body;
-  const uuidAssigned = uuidv4();
-
-  const verifyLink = `http://localhost:3001/auth/email-registration/verify/${uuidAssigned}`;
-  ssoRepository.createSsoEntry({ uuid: uuidAssigned, userId: null, type: 'email', sso_account: email, verified: false, verifyLink, status: 'pending' });
-
-  sendEmail(email, 'Email Verification', `Please verify your email by clicking on the following link: ${verifyLink}`);
-
-  res.status(201).json({ message: 'User registered successfully' });
 });
 
 router.get('/verify/:uuid', async (req, res) => {
   const { uuid } = req.params;
   await EmailRegistrationService.verifyUuid(process, uuid);
   res.json({ message: 'User verified successfully' });
+});
+
+router.reject('/reject/:uuid', async (req, res) => {
+  const { uuid } = req.params;
+  await EmailRegistrationService.rejectUuid(process, uuid);
+  res.json({ message: 'User registration rejected successfully' });
 });
 
 export default router;

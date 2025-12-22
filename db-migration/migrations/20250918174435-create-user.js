@@ -28,16 +28,6 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      username: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
         unique: true,
       },
       phone: {

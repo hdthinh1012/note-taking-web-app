@@ -14,19 +14,26 @@ const transporter = createTransport({
 });
 
 async function sendEmail(to, subject, htmlContent) {
-    try {
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: to,
-            subject: subject,
-            html: htmlContent,
-        };
+    let retries = 3;
+    while (retries > 0) {
+        try {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: to,
+                subject: subject,
+                html: htmlContent,
+            };
 
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully');
-    } catch (error) {
-        console.error('Error sending email:', error);
-        throw error; // Re-throw for handling in the calling context
+            await transporter.sendMail(mailOptions);
+            console.log('Email sent successfully');
+            return; // Exit the function if email is sent successfully
+        } catch (error) {
+            console.error('Error sending email:', error);
+            retries--;
+            if (retries === 0) {
+                throw error; // Re-throw for handling in the calling context
+            }
+        }
     }
 }
 
