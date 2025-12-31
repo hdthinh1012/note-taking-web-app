@@ -5,14 +5,14 @@ class EmailRegistrationService {
     static async verifyUuid(uuid) {
         await verifySsoSem.acquire();
         try {
-            // const ssoEntry = await ssoRepository.getSsoEntryByUuid(uuid);
-            // if (!ssoEntry) {
-            //     throw new Error('Invalid UUID');
-            // }
-            // if (ssoEntry.verified) {
-            //     throw new Error('UUID already verified');
-            // }
-            // await ssoRepository.markSsoAsVerified(uuid);
+            const ssoEntry = await ssoRepository.getSsoEntryByUuid(uuid);
+            if (!ssoEntry) {
+                throw new Error('Invalid UUID');
+            }
+            if (ssoEntry.verified) {
+                throw new Error('UUID already verified');
+            }
+            await ssoRepository.markSsoAsVerified(uuid);
             await new Promise((resolve) => setTimeout(resolve, 10000));
             console.log(`Verified UUID: ${uuid}`);
         } catch (error) {
@@ -25,14 +25,14 @@ class EmailRegistrationService {
     static async rejectUuid(uuid) {
         await verifySsoSem.acquire();
         try {
-            // const ssoEntry = await ssoRepository.getSsoEntryByUuid(uuid);
-            // if (!ssoEntry) {
-            //     throw new Error('Invalid UUID');
-            // }
-            // if (ssoEntry.verified) {
-            //     throw new Error('UUID already verified');
-            // }
-            // await ssoRepository.markSsoAsRejected(uuid);
+            const ssoEntry = await ssoRepository.getSsoEntryByUuid(uuid);
+            if (!ssoEntry) {
+                throw new Error('Invalid UUID');
+            }
+            if (ssoEntry.verified) {
+                throw new Error('UUID already verified');
+            }
+            await ssoRepository.markSsoAsRejected(uuid);
             await new Promise((resolve) => setTimeout(resolve, 10000));
             console.log(`Rejected UUID: ${uuid}`);
         } catch (error) {

@@ -7,11 +7,14 @@ import { db } from './utils/database/database.js';
 import authRouter from './modules/auth/endpoints/index.js';
 import notesRouter from './modules/notes/endpoints/index.js';
 import process from 'node:process';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 function runServer() {
   const app = express();
   app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true
   }));
