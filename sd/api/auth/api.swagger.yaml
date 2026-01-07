@@ -1,0 +1,51 @@
+openapi: 3.0.0
+info:
+  title: Note-Taking Web App - Auth API
+  description: API documentation for Auth features of the Note-Taking Web App
+  version: 1.0.0
+servers:
+  - url: http://localhost:3001
+    description: Local development server
+  - url: https://ntwa.vn
+    description: Production server
+paths:
+  /auth/email-registration/signup:
+    post:
+      summary: Signup with email
+      description: Initiates the signup process by sending a verification email to the user.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+      responses:
+        '200':
+          description: Registration email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Register email sent, check your inbox for further instruction!
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    example: Invalid email format or user already exists.

@@ -16,11 +16,17 @@ router.get('/healthcheck', (req, res) => {
   res.json({ status: 'ok', service: 'emailRegistration' });
 });
 
-router.post('/register', (req, res) => {
+router.post('/signup', (req, res) => {
   try {
     if (!req.body.email) {
       return res.status(400).json({ error: 'Email is required' });
     }
+    // find sso entry by email
+    const existingSso = ssoRepository.getSsosByAccount(req.body.email);
+    if (existingSso && existingSso.length > 0) {
+      return res.status(400).json({ error: 'Email is already registered' });
+    }
+
     const { email } = req.body;
     const uuidAssigned = uuidv4();
 
@@ -30,7 +36,7 @@ router.post('/register', (req, res) => {
 
     sendEmail(email, 'Email Verification', `Please verify your email by clicking on the following link: ${verifyLink}. If you did not request this, you can reject the registration here: ${rejectLink}`);
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(200).json({ message: 'Register email sent, check your inbox for further instruction!' });
   } catch (error) {
     console.error('Error during registration:', error);
     res.status(500).json({ error: 'Internal Server Error' });

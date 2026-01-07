@@ -1,4 +1,5 @@
 import React from 'react';
+import {Button} from '@/components/ui/button';
 
 const HomePage = () => (
   <main>
@@ -7,15 +8,15 @@ const HomePage = () => (
     <h2>Archived Notes</h2>
     <h2>Tags</h2>
     <input placeholder="Search by title, content, or tags" />
-    <button>Create New Note</button>
+    <Button>Create New Note</Button>
     <div>
       <span>Tags</span>
       <span>Last Edited</span>
     </div>
-    <button>Archive Note</button>
-    <button>Delete Note</button>
-    <button>Save Note</button>
-    <button>Cancel</button>
+    <Button>Archive Note</Button>
+    <Button>Delete Note</Button>
+    <Button>Save Note</Button>
+    <Button>Cancel</Button>
   </main>
 );
 

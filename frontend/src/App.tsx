@@ -25,8 +25,8 @@ const router = createBrowserRouter([
     path: '/',
     element: <DefaultLayout />, // default layout
     children: [
-      { index: true, element: <HomePage /> },
       { path: 'settings', element: <SettingsPage /> },
+      { index: true, element: <HomePage /> },
     ],
   },
 ]);

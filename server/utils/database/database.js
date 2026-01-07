@@ -1,8 +1,8 @@
-import dbMigration from 'db-migration/index.js';
-import dbModels from 'db-migration/models/index.js';
+import dbMigration from '@ntwa/db-migration/index.js';
+import dbModels from '@ntwa/db-migration/models/index.js';
 
 const { sequelize, Sequelize } = dbMigration;
-const { models } = dbModels;
+const { initializeSequelize, models } = dbModels;
 
 /**
  * Database configuration for the Express server
@@ -13,7 +13,7 @@ class DatabaseManager {
   constructor(sequelizeInstance, modelsInstance) {
     this.sequelize = sequelizeInstance || sequelize;
     this.Sequelize = Sequelize;
-    this.models = modelsInstance || models;
+    this.models = modelsInstance || initializeSequelize();
     this.isConnected = false;
   }
 
@@ -154,6 +154,14 @@ const transaction = async (callback) => {
     throw error;
   }
 };
+
+console.log('Database models export:', {
+  models,
+  User,
+  Note,
+  Category,
+  Sso
+});  
 
 // Export both the manager and direct access to common properties
 export {

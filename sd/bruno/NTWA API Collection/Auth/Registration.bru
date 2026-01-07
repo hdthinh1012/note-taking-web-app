@@ -1,0 +1,22 @@
+meta {
+  name: Registration
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{SERVER_URL}}/auth/email-registration/signup
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "hdthinh001@gmail.com"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
