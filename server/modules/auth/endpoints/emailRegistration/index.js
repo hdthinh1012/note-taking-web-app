@@ -39,39 +39,49 @@ router.post('/signup', (req, res) => {
     res.status(200).json({ message: 'Register email sent, check your inbox for further instruction!' });
   } catch (error) {
     console.error('Error during registration:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error });
   }
 });
 
 router.get('/verify/:uuid', async (req, res) => {
-  const { uuid } = req.params;
-  await EmailRegistrationService.verifyUuid(process, uuid);
-  res.json({ message: 'User verified successfully' });
+  try {
+    const { uuid } = req.params;
+    await EmailRegistrationService.verifyUuid(uuid);
+    res.json({ message: 'User verified successfully' });
+  } catch (error) {
+    console.error('Error during verification:', error);
+    res.status(500).json({ error });
+  }
 });
 
 router.get('/reject/:uuid', async (req, res) => {
-  const { uuid } = req.params;
-  await EmailRegistrationService.rejectUuid(process, uuid);
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Registration Rejected</title>
-        <style>
-          body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f5f5f5; }
-          .container { text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-          h1 { color: #333; }
-          p { color: #666; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Thank You for Your Response</h1>
-          <p>The registration request has been rejected successfully.</p>
-        </div>
-      </body>
-    </html>
-  `);
+  try {
+    const { uuid } = req.params;
+    await EmailRegistrationService.rejectUuid(uuid);
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Registration Rejected</title>
+          <style>
+            body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f5f5f5; }
+            .container { text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            h1 { color: #333; }
+            p { color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>Thank You for Your Response</h1>
+            <p>The registration request has been rejected successfully.</p>
+          </div>
+        </body>
+      </html>
+    `);
+  } catch (error) {
+    console.error('Error during verification:', error);
+    res.status(500).json({ error });
+  }
 });
 
 router.get('/account-create/:token', (req, res) => {});

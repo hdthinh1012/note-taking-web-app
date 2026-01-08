@@ -66,6 +66,20 @@ class SsoRepository {
         }
     }
 
+    async markSsoAsRejected(uuid) {
+        try {
+            const result = await this.model.update(
+                { verified: false, status: SsoStatus.REJECTED },
+                { where: { uuid } }
+            );
+            return result;
+        }
+        catch (error) {
+            console.error('Error marking SSO as verified:', error);
+            throw error;
+        }
+    }
+
     async markSsoAsInvalid(uuids) {
         try {
             const result = await this.model.update(

@@ -155,14 +155,6 @@ const transaction = async (callback) => {
   }
 };
 
-console.log('Database models export:', {
-  models,
-  User,
-  Note,
-  Category,
-  Sso
-});  
-
 // Export both the manager and direct access to common properties
 export {
   db,

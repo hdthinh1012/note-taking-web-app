@@ -15,6 +15,7 @@ const transporter = createTransport({
 
 async function sendEmail(to, subject, htmlContent) {
     let retries = 3;
+
     while (retries > 0) {
         try {
             const mailOptions = {

@@ -1,7 +1,7 @@
 import cluster from 'node:cluster';
 // import { availableParallelism } from 'node:os';
 // const numCPUs = availableParallelism();
-const numCPUs = 2;
+const numCPUs = 1; // For debugging purpose, set to 1
 import process from 'node:process';
 import runServer from './server.js';
 import dotenv from 'dotenv';

@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node --inspect=9229 index.js",
     "dev": "nodemon index.js",
     "test": "jest"
   },
