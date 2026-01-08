@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jsonwebtoken from 'jsonwebtoken';
 import { sendEmail } from '../../../../utils/email/emailServices.js';
 import { EmailRegistrationService } from '../../services/emailRegistration.js';
+import { AccountRegistrationService } from '../../services/accountRegistration.js';
 import dotenv from 'dotenv';
 
 
@@ -47,7 +48,21 @@ router.get('/verify/:uuid', async (req, res) => {
   try {
     const { uuid } = req.params;
     await EmailRegistrationService.verifyUuid(uuid);
-    res.json({ message: 'User verified successfully' });
+    const registerToken = await AccountRegistrationService.createRegisterToken(uuid);
+
+
+    // const csrfProtectedForm = `
+    //   <form id="redirectForm" method="GET" action="http://localhost:3001/abc/xyz">
+    //     <input type="hidden" name="csrfToken" value="${csrfToken}" />
+    //     <input type="username" name="username" />
+    //     <input type="password" name="password" />
+    //     <button type="submit">Create Account</button>
+    //   </form>
+    // `;
+    
+    // Return frontend URL with token as query parameter
+    const frontendUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/account-register?sso_uuid=${registerToken.sso_uuid}`;
+    res.status(302).redirect(frontendUrl);
   } catch (error) {
     console.error('Error during verification:', error);
     res.status(500).json({ error });

@@ -9,6 +9,7 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage.js';
 import LoginPage from './pages/auth/LoginPage.js';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage.js';
 import SignupPage from './pages/auth/SignupPage.js';
+import AccountRegisterPage from './pages/auth/AccountRegisterPage.js';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
     children: [
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'account-register', element: <AccountRegisterPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
     ],

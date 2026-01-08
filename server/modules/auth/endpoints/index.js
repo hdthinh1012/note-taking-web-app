@@ -15,6 +15,8 @@ router.get('/protected', authenticateToken, authorizeRole('user'), (req, res) =>
 // Add more auth endpoints here
 // Attach emailRegistration sub-router
 import emailRegistrationRouter from './emailRegistration/index.js';
+import accountRegistrationRouter from './accountRegistration/router.js';
 router.use('/email-registration', emailRegistrationRouter);
+router.use('/account-registration', accountRegistrationRouter);
 
 export default router;

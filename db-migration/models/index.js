@@ -56,6 +56,9 @@ function initializeSequelize(configInput = config) {
 
   models.sequelize = sequelize;
   models.Sequelize = Sequelize;
+  // console.log('🔧 Database models initialized models:', models);
+  // console.log('🔧 Database models initialized models.Sso:', models.Sso);
+  // console.log('🔧 Database models initialized models.RegisterToken:', models.RegisterToken);
   return models;
 }
 

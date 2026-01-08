@@ -14,6 +14,8 @@ class DatabaseManager {
     this.sequelize = sequelizeInstance || sequelize;
     this.Sequelize = Sequelize;
     this.models = modelsInstance || initializeSequelize();
+    console.log('🔧 Initializing database models...', this.models);
+
     this.isConnected = false;
   }
 
@@ -135,6 +137,7 @@ const User = models.User;
 const Note = models.Note;
 const Category = models.category;
 const Sso = models.sso;
+const RegisterToken = models.register_token;
 
 // Helper functions
 const connect = () => databaseManager.connect();
@@ -166,6 +169,7 @@ export {
   Note,
   Category,
   Sso,
+  RegisterToken,
   connect,
   disconnect,
   isHealthy,
