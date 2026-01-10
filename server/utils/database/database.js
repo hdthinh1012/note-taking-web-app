@@ -14,7 +14,7 @@ class DatabaseManager {
     this.sequelize = sequelizeInstance || sequelize;
     this.Sequelize = Sequelize;
     this.models = modelsInstance || initializeSequelize();
-    console.log('🔧 Initializing database models...', this.models);
+    // console.log('🔧 Initializing database models...', this.models);
 
     this.isConnected = false;
   }

@@ -42,7 +42,7 @@ class SsoRepository {
         }
     }
 
-    async getSsosByAccount(sso_account) {
+    async getVerifiedSsosByAccount(sso_account) {
         try {
             const entries = await this.model.findAll({ where: { sso_account, verified: true } });
             return entries;

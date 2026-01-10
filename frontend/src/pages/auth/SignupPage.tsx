@@ -33,14 +33,15 @@ const SignupPage = () => {
         
         // Check if request was successful
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          return response.json().then(errData => {
+            throw new Error(errData.error || 'Signup failed');
+          });
         }
-        
         return response.json();
       })
       .then(data => {
         console.log('Success:', data);
-        postEmailSignup(data.email);
+        postEmailSignup(data.message);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -55,8 +56,8 @@ const SignupPage = () => {
 
   const postSignupFailed = (errorMessage: string) => {
     // Implement the logic to handle signup failure
-    setIsFailed(true);
     setErrorMessage(errorMessage);
+    setIsFailed(true);
   }
 
   const RefreshButton = () => {
@@ -72,15 +73,19 @@ const SignupPage = () => {
   };
   
   return (
-    <main className='bg-white rounded-lg shadow-md p-6 mx-auto max-w-md'>
+    <main className='bg-white rounded-lg shadow-md p-6 mx-auto max-w-md d-flex justify-center items-center'>
       {isSubmitted ? <>
         <h2 className='max-w text-center text-3xl font-bold' style={{ fontFamily: 'Inter, sans-serif' }}>Thank you for signing up! Please check your email to verify your account.</h2>
-        <RefreshButton />
+        <div className='flex justify-center'>
+          <RefreshButton />
+        </div>
       </> : 
         isFailed ? <>
           <h2 className='max-w text-center text-3xl font-bold' style={{ fontFamily: 'Inter, sans-serif' }}>Signup Failed</h2>
           <p className='max-w text-center text-sm text-red-500'>{errorMessage}</p>
-        <RefreshButton />
+        <div className='flex justify-center'>
+          <RefreshButton />
+        </div>
       </> :
       <>
         <div className='flex justify-center items-center gap-2 mb-4'>

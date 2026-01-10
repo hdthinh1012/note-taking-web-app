@@ -15,6 +15,16 @@ class RegisterTokenRepository {
         }
     }
 
+    async getRegisterToken(tokenUuid) {
+        try {
+            const entry = await this.model.findOne({ where: { uuid: tokenUuid } });
+            return entry;
+        } catch (error) {
+            console.error('Error fetching register token by tokenUuid:', error);
+            throw error;
+        }
+    }
+
     async getRegisterTokenBySsoUuid(ssoUuid) {
         try {
             const entry = await this.model.findOne({ where: { sso_uuid: ssoUuid } });

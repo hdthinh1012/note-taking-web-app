@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "node --inspect=9229 index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon --inspect=9229 index.js",
     "test": "jest"
   },
   "dependencies": {
     "@ntwa/db-migration": "./db-migration",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.18.2",

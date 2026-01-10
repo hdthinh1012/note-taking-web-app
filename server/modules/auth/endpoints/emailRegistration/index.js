@@ -23,7 +23,7 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: 'Email is required' });
     }
     // find sso entry by email
-    const existingSso = await ssoRepository.getSsosByAccount(req.body.email);
+    const existingSso = await ssoRepository.getVerifiedSsosByAccount(req.body.email);
     if (existingSso && existingSso.length > 0) {
       return res.status(400).json({ error: 'Email is already registered' });
     }
@@ -64,7 +64,29 @@ router.get('/verify/:uuid', async (req, res) => {
     const frontendUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/auth/account-register?sso_uuid=${registerToken.sso_uuid}`;
     res.status(302).redirect(frontendUrl);
   } catch (error) {
-    console.error('Error during verification:', error);
+    console.error('Error during verification:', error.message);
+    if (error.message === 'Invalid UUID' || error.message === 'Email is already registered') {
+      return res.status(400).send(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Registration Rejected</title>
+            <style>
+              body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f5f5f5; }
+              .container { text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+              h1 { color: #333; }
+              p { color: #666; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>400 BAD REQUEST</h1>
+              <p>${error.message}</p>
+            </div>
+          </body>
+        </html>
+      `);
+    }
     res.status(500).json({ error });
   }
 });

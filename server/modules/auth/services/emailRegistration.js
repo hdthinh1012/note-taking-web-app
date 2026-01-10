@@ -9,8 +9,10 @@ class EmailRegistrationService {
             if (!ssoEntry) {
                 throw new Error('Invalid UUID');
             }
-            if (ssoEntry.verified) {
-                throw new Error('UUID already verified');
+            const sso_account = ssoEntry.sso_account;
+            const existingVerifiedSsos = await ssoRepository.getVerifiedSsosByAccount(sso_account);
+            if (existingVerifiedSsos && existingVerifiedSsos.length > 0) {
+                throw new Error('Email is already registered');
             }
             await ssoRepository.markSsoAsVerified(uuid);
             await new Promise((resolve) => setTimeout(resolve, 10000));
