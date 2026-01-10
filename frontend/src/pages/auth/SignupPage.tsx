@@ -15,6 +15,8 @@ const SignupPage = () => {
   } = useForm<SignupInputs>();
 
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isFailed, setIsFailed] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const onSubmit: SubmitHandler<SignupInputs> = (data) => {
     // Handle signup logic here
@@ -25,19 +27,36 @@ const SignupPage = () => {
       },
       body: JSON.stringify({ email: data.email }),
     })
-      .then(response => response.json())
+      .then(response => {
+        console.log('Status code:', response.status); // Access status code here
+        console.log('Status OK:', response.ok); // true if status is 200-299
+        
+        // Check if request was successful
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return response.json();
+      })
       .then(data => {
         console.log('Success:', data);
         postEmailSignup(data.email);
       })
       .catch((error) => {
         console.error('Error:', error);
+        postSignupFailed(error.message);
       });
   };
 
   const postEmailSignup = (email: string) => {
     // Implement the logic to post email for signup
     setIsSubmitted(true);
+  }
+
+  const postSignupFailed = (errorMessage: string) => {
+    // Implement the logic to handle signup failure
+    setIsFailed(true);
+    setErrorMessage(errorMessage);
   }
 
   const RefreshButton = () => {
@@ -57,7 +76,13 @@ const SignupPage = () => {
       {isSubmitted ? <>
         <h2 className='max-w text-center text-3xl font-bold' style={{ fontFamily: 'Inter, sans-serif' }}>Thank you for signing up! Please check your email to verify your account.</h2>
         <RefreshButton />
-      </> : <>
+      </> : 
+        isFailed ? <>
+          <h2 className='max-w text-center text-3xl font-bold' style={{ fontFamily: 'Inter, sans-serif' }}>Signup Failed</h2>
+          <p className='max-w text-center text-sm text-red-500'>{errorMessage}</p>
+        <RefreshButton />
+      </> :
+      <>
         <div className='flex justify-center items-center gap-2 mb-4'>
           <img src='/public/ntwa-logo.svg'/><span style={{ fontFamily: 'Pacifico, cursive' }}>Notes</span>
         </div>

@@ -17,13 +17,13 @@ router.get('/healthcheck', (req, res) => {
   res.json({ status: 'ok', service: 'emailRegistration' });
 });
 
-router.post('/signup', (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
     if (!req.body.email) {
       return res.status(400).json({ error: 'Email is required' });
     }
     // find sso entry by email
-    const existingSso = ssoRepository.getSsosByAccount(req.body.email);
+    const existingSso = await ssoRepository.getSsosByAccount(req.body.email);
     if (existingSso && existingSso.length > 0) {
       return res.status(400).json({ error: 'Email is already registered' });
     }

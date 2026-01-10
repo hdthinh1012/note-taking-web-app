@@ -44,7 +44,7 @@ class SsoRepository {
 
     async getSsosByAccount(sso_account) {
         try {
-            const entries = await this.model.findAll({ where: { sso_account } });
+            const entries = await this.model.findAll({ where: { sso_account, verified: true } });
             return entries;
         } catch (error) {
             console.error('Error fetching SSO entries by account:', error);

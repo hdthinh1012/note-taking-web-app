@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "dev": "echo \"DB Migration no dev script here!\"",
     "test": "echo \"Error: no test specified\" && exit 1",
     "connect": "node index.js",
     "startTestEnvironment": "powershell.exe -File ./test/run.ps1",

@@ -49,3 +49,61 @@ paths:
                   description:
                     type: string
                     example: Invalid email format or user already exists.
+  /auth/account-registration/signup:
+    post:
+      summary: Signup with account credentials
+      description: Creates a new user account with username and password.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - csrf_token
+                - username
+                - password
+              properties:
+                csrf_token:
+                  type: string
+                  example: "abc123xyz"
+                username:
+                  type: string
+                  example: john_doe
+                password:
+                  type: string
+                  format: password
+                  example: SecurePassword123!
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Account created successfully
+        '403':
+          description: Invalid CSRF token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    example: CSRF token is invalid or expired.
+        '409':
+          description: Username already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    example: Username has already been used.
