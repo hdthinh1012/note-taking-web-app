@@ -12,7 +12,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "setup-env": "cd ./env && yarn startTestEnvironment && bash -c 'for i in {1..5}; do echo \"Health check attempt $i/5...\"; podman exec ntwa-db psql -U noteuser -d notedb -c \"SELECT 1\" > /dev/null 2>&1 && echo \"✓ PostgreSQL ready\" && exit 0; [ $i -lt 5 ] && sleep 2; done; echo \"✗ PostgreSQL health check failed\"; exit 1' && cd ../db-migration && yarn migrate",
+    "setup-env": "cd ./env && yarn startTestEnvironment && bash -c 'for i in {1..5}; do echo \"Health check attempt $i/5...\"; podman exec ntwa-db psql -U noteuser -d notedb -c \"SELECT 1\" > /dev/null 2>&1 && echo \"✓ PostgreSQL ready\" && exit 0; [ $i -lt 5 ] && sleep 2; done; echo \"✗ PostgreSQL health check failed\"; exit 1' && cd ../db-migration && yarn migrate && cd ../server && yarn install",
     "teardown-env": "cd ./db-migration && yarn migrate:undo:all && cd ../env && yarn stopTestEnvironment"
   },
   "devDependencies": {

@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --inspect=9229 index.js",
-    "dev": "nodemon --inspect=9229 index.js",
+    "start": "DEBUG=ntwa:* node --inspect=9229 index.js",
+    "dev": "DEBUG=ntwa:* nodemon --inspect=9229 index.js",
     "test": "jest"
   },
   "dependencies": {

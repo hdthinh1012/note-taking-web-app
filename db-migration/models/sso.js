@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      sso.belongsTo(models.User, { foreignKey: 'userId' });
     }
   }
   sso.init({

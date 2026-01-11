@@ -37,7 +37,7 @@ class AccountRegistrationService {
 
     static async markRegisterTokenAsUsed(tokenUuid) {
         try {
-            const updatedToken = await registerTokenRepository.updateRegisterTokenStatus(tokenUuid, 'USED');
+            const updatedToken = await registerTokenRepository.markRegisterTokenAsUsed(tokenUuid);
             return updatedToken;
         } catch (error) {
             console.error('Error marking register token as used in AccountRegistrationService:', error);

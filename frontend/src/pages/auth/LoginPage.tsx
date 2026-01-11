@@ -1,19 +1,50 @@
 import React from 'react';
+import { set, useForm } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 
-const LoginPage = () => (
-  <main>
-    <h1>Welcome to Notes</h1>
-    <p>Please log in to continue</p>
-    <label>Email Address</label>
-    <input type="email" placeholder="email@example.com" />
-    <label>Password</label>
-    <input type="password" />
-    <button>Forgot</button>
-    <button>Login</button>
-    <p>Or log in with:</p>
-    <button>Google</button>
-    <p>No account yet? <a href="/signup">Sign Up</a></p>
-  </main>
-);
+type SignupInputs = {
+  username: string;
+  password: string;
+};
+
+const LoginPage = () => {
+  const {
+      register,
+      handleSubmit,
+      watch,
+      formState: { errors },
+  } = useForm<SignupInputs>();
+
+  const onSubmit: SubmitHandler<SignupInputs> = (data) => {
+      // Handle signup logic here
+      alert('Login account form submitted: ' + JSON.stringify(data));
+  };
+
+  return (
+    <main className='bg-white rounded-lg shadow-md p-6 mx-auto max-w-md d-flex justify-center items-center'>
+      <div className='flex justify-center items-center gap-2 mb-4'>
+        <img src='/public/ntwa-logo.svg'/><span style={{ fontFamily: 'Pacifico, cursive' }}>Notes</span>
+      </div>
+      <div className="flex justify-center items-center gap-2 mb-4">
+        <h2 className='max-w text-center text-3xl font-bold' style={{ fontFamily: 'Inter, sans-serif' }}>Create Your Account</h2>
+      </div>
+      <div className="flex justify-center items-center gap-2 mb-4">
+        <p className='max-w text-center text-sm text-neutral-400'>Sign up to start organizing your notes and boost your productivity.</p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex flex-col w-full [&>*]:w-full">
+          <label className='text-sm font-semibold my-2'>Email Address</label>
+          <input className='p-3 rounded-md border border-neutral-200 outline-none focus:border-neutral-400 transition-colors' type="email" placeholder="email@example.com" {...register('username', { required: true })} />
+          {errors.username && <span className='text-sm text-red-500 mt-1'>This field is required</span>}
+          <label className='text-sm font-semibold my-2'>Password</label>
+          <input className='p-3 rounded-md border border-neutral-200 outline-none focus:border-neutral-400 transition-colors' type="password" placeholder="Password" {...register('password', { required: true })} />
+          {errors.password && <span className='text-sm text-red-500 mt-1'>This field is required</span>}
+          <button type="submit" className='my-5 max-w bg-blue-600 text-neutral-200'>Sign Up</button>
+        </div>
+      </form>
+    </main>
+  );
+};
 
 export default LoginPage;

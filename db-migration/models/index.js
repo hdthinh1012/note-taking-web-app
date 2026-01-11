@@ -1,5 +1,5 @@
 'use strict';
-
+const debug = require('debug')('ntwa:db-migration');
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -48,6 +48,8 @@ function initializeSequelize(configInput = config) {
       models[model.name] = model;
     });
 
+  debug('🔧 Database models initialized models:', models);
+
   Object.keys(models).forEach(modelName => {
     if (models[modelName].associate) {
       models[modelName].associate(models);
@@ -56,7 +58,6 @@ function initializeSequelize(configInput = config) {
 
   models.sequelize = sequelize;
   models.Sequelize = Sequelize;
-  // console.log('🔧 Database models initialized models:', models);
   // console.log('🔧 Database models initialized models.Sso:', models.Sso);
   // console.log('🔧 Database models initialized models.RegisterToken:', models.RegisterToken);
   return models;

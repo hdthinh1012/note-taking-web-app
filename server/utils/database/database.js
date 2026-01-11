@@ -14,7 +14,7 @@ class DatabaseManager {
     this.sequelize = sequelizeInstance || sequelize;
     this.Sequelize = Sequelize;
     this.models = modelsInstance || initializeSequelize();
-    // console.log('🔧 Initializing database models...', this.models);
+    console.log('🔧 Initializing database models...', this.models);
 
     this.isConnected = false;
   }
@@ -133,8 +133,8 @@ const databaseManager = new DatabaseManager();
 const db = databaseManager;
 
 // Convenient model exports (destructured for easy access)
-const User = models.User;
-const Note = models.Note;
+const User = models.user;
+const Note = models.note;
 const Category = models.category;
 const Sso = models.sso;
 const RegisterToken = models.register_token;

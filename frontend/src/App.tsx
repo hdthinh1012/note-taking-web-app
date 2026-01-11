@@ -3,7 +3,7 @@ import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import DefaultLayout from './layouts/DefaultLayout.js';
 import AuthLayout from './layouts/AuthLayout.js';
-import HomePage from './pages/HomePage.js';
+import HomePage from './pages/HeroPage.js';
 import SettingsPage from './pages/SettingsPage.js';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage.js';
 import LoginPage from './pages/auth/LoginPage.js';

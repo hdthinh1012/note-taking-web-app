@@ -7,8 +7,13 @@ class UserRepository {
 
     async createUser(data) {
         try {
+            // Add a code test using sequelize model to get all available tables in the database
+            const tables = await db.sequelize.getQueryInterface().showAllTables();
+            console.log('Available tables in the database:', tables);
             const newUser = await this.model.create({
                 ...data,
+                phone: "",
+                isActive: true
             });
             return newUser;
         } catch (error) {

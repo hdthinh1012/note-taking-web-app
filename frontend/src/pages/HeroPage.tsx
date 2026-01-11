@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 
 const HomePage = () => (
   <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">

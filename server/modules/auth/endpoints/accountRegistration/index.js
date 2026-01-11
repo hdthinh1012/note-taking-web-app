@@ -31,7 +31,7 @@ router.get('/gen-csrf-token/:ssoUuid', async (req, res) => {
     }
 });
 
-router.post('/auth/account-registration/signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
     try {
         const { username, password, csrfToken } = req.body;
 
@@ -40,33 +40,28 @@ router.post('/auth/account-registration/signup', async (req, res) => {
         }
 
         // Verify CSRF token
-        let decoded;
-        try {
-            decoded = jsonwebtoken.verify(csrfToken, process.env.CSRF_TOKEN_SECRET);
-            const registerToken = await AccountRegistrationService.getRegisterTokenBySsoUuid(decoded.registerToken);
-            if (!registerToken) {
-                return res.status(403).json({ error: 'Invalid or expired CSRF token' });
-            }
-            if (registerToken.status !== 'CREATED') {
-                return res.status(403).json({ error: 'CSRF token has already been used' });
-            }
-            // Mark the register token as used
-            await AccountRegistrationService.markRegisterTokenAsUsed(registerToken.uuid);
-            // Proceed with account creation logic here
-            const hashedPassword = await BcryptService.hashPassword(password);
-            // Create user in the database (pseudo-code, replace with actual implementation)
-            const email = (await ssoRepository.getSsoEntryByUuid(registerToken.sso_uuid)).sso_account;
-            await UserService.createUser({username, email, hashedPassword});
-            
-            return res.status(201).json({ message: 'Account created successfully' });
-
-        } catch (err) {
-            console.error('[ERROR][/auth/account-registration/signup] verifying CSRF token:', err);
-            return res.status(500).json({ error: 'Internal server error' });
+        let decoded = jsonwebtoken.verify(csrfToken, process.env.CSRF_TOKEN_SECRET);
+        console.log('Decoded CSRF token:', decoded);
+        const registerToken = await AccountRegistrationService.getRegisterToken(decoded.registerToken);
+        if (!registerToken) {
+            return res.status(403).json({ error: 'Invalid or expired CSRF token' });
         }
+        if (registerToken.status !== 'CREATED') {
+            return res.status(403).json({ error: 'CSRF token has already been used' });
+        }
+        // Mark the register token as used
+        await AccountRegistrationService.markRegisterTokenAsUsed(registerToken.uuid);
+        // Proceed with account creation logic here
+        const hashedPassword = await BcryptService.hashPassword(password);
+        // Create user in the database (pseudo-code, replace with actual implementation)
+        const email = (await ssoRepository.getSsoEntryByUuid(registerToken.sso_uuid)).sso_account;
+        await UserService.createUser({username, email, hashedPassword});
+        
+        return res.status(201).json({ message: 'Account created successfully' });
     }
     catch (err) {
-
+        console.error('ERROR][/auth/account-registration/signup] Error during account registration signup:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

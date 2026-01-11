@@ -1,6 +1,6 @@
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { set, useForm } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 
 type AccountRegisterInputs = {
@@ -11,9 +11,12 @@ type AccountRegisterInputs = {
 };
 
 const AccountRegisterPage = () => {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const ssoUuid = searchParams.get('sso_uuid');
     const [token, setToken] = React.useState<string | null>(null);
+    const [isInvalidLink, setIsInvalidLink] = React.useState(false);
+    const [invalidLinkMessage, setInvalidLinkMessage] = React.useState('');
 
     const {
         register,
@@ -28,14 +31,58 @@ const AccountRegisterPage = () => {
         alert('ERROR: Missing sso_uuid in query parameters');
     } else {
         fetch(`${import.meta.env.VITE_SERVER_URL}/auth/account-registration/gen-csrf-token/${ssoUuid}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error || 'Invalid form link request');
+                    });
+                }
+
+                return response.json();
+            })
             .then(data => setToken(data.csrfToken))
-            .catch(error => console.error('Error fetching CSRF token:', error));
+            .catch(error => {
+                console.error('Error fetching CSRF token:', error);
+                setIsInvalidLink(true);
+                setInvalidLinkMessage(error.message);
+            });
     }
 
     const onSubmit: SubmitHandler<AccountRegisterInputs> = (data) => {
         // Handle signup logic here
         alert('Register account form submitted: ' + JSON.stringify(data));
+        fetch(`${import.meta.env.VITE_SERVER_URL}/auth/account-registration/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                csrfToken: data.csrfToken,
+                username: data.username,
+                password: data.password,
+            }),
+        })
+            .then(response => {
+                console.log('Status code:', response.status); // Access status code here
+                console.log('Status OK:', response.ok); // true if status is 200-299
+
+                // Check if request was successful
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error || 'Account registration failed');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert('Success: ' + data.message);
+                navigate('/auth/login');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+        });
     };
 
 
@@ -71,7 +118,19 @@ const AccountRegisterPage = () => {
                             <button type="submit" className='my-5 max-w bg-blue-600 text-neutral-200'>Register</button>
                         </div>
                     </form>
-                ) : (
+                ) : 
+                isInvalidLink ? (
+                    <div>
+                        <h2 className='max-w text-center text-3xl font-bold' style={{ fontFamily: 'Inter, sans-serif' }}>Invalid Registration Link</h2>
+                        <p className='max-w text-center text-sm text-red-500'>{invalidLinkMessage}</p>
+                        <div className="flex w-full justify-center items-center gap-2 mb-4">
+                            <button onClick={() => navigate('/auth/signup')} className='mt-6 max-w bg-blue-600 text-neutral-200 p-3 rounded-md'>
+                                Back to Email Signup
+                            </button>
+                        </div>
+                    </div>
+                ) :
+                (
                     <p>Loading CSRF token...</p>
                 )}
             </main>

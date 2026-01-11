@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Note',
+    modelName: 'note',
     timestamps: true,
     noPrimaryKey: true
   });

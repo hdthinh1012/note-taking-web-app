@@ -17,6 +17,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "debug": "^4.4.3",
     "dotenv": "^17.2.3",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
