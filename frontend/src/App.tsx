@@ -10,6 +10,8 @@ import LoginPage from './pages/auth/LoginPage.js';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage.js';
 import SignupPage from './pages/auth/SignupPage.js';
 import AccountRegisterPage from './pages/auth/AccountRegisterPage.js';
+import UserHome from './pages/home/UserHome.js';
+import HomeLayout from './layouts/HomeLayout.js';
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,13 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
     ],
   },
+  {
+    path: 'note',
+    element: <HomeLayout />, // default layout
+    children: [
+      { path : 'home', element: <UserHome /> },
+    ],
+  }
 ]);
 
 function App() {

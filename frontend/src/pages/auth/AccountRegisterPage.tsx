@@ -50,7 +50,6 @@ const AccountRegisterPage = () => {
 
     const onSubmit: SubmitHandler<AccountRegisterInputs> = (data) => {
         // Handle signup logic here
-        alert('Register account form submitted: ' + JSON.stringify(data));
         fetch(`${import.meta.env.VITE_SERVER_URL}/auth/account-registration/signup`, {
             method: 'POST',
             headers: {
