@@ -18,6 +18,7 @@ const LoginPage = () => {
       watch,
       formState: { errors },
   } = useForm<SignupInputs>();
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const onSubmit: SubmitHandler<SignupInputs> = (data) => {
       // Handle signup logic here
@@ -48,7 +49,9 @@ const LoginPage = () => {
       })
       .catch((error) => {
           console.error('Error:', error);
+
           // Handle login failure (e.g., show error message)
+          setErrorMessage(error.message);
       });
   };
 
@@ -72,6 +75,7 @@ const LoginPage = () => {
           <label className='text-sm font-semibold my-2'>Password</label>
           <input className='p-3 rounded-md border border-neutral-200 outline-none focus:border-neutral-400 transition-colors' type="password" placeholder="password" {...register('password', { required: true })} />
           {errors.password && <span className='text-sm text-red-500 mt-1'>This field is required</span>}
+          {errorMessage && <span className='text-sm text-red-500 mt-1'>{errorMessage}</span>}
           <button type="submit" className='my-5 max-w bg-blue-600 text-neutral-200'>Sign Up</button>
         </div>
       </form>

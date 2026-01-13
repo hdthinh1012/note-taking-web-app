@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { ViewportProvider } from './global/provider/ViewportProvider.js';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import DefaultLayout from './layouts/DefaultLayout.js';
 import AuthLayout from './layouts/AuthLayout.js';
@@ -43,7 +44,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <ViewportProvider>
+      <RouterProvider router={router} />
+    </ViewportProvider>
+  );
 }
 
 export default App;
