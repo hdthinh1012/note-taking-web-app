@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ViewportProvider } from './global/provider/ViewportProvider.js';
+import { BrowserFontsizeProvider } from './global/provider/BrowserFontsizeProvider.js';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import DefaultLayout from './layouts/DefaultLayout.js';
 import AuthLayout from './layouts/AuthLayout.js';
@@ -45,9 +46,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ViewportProvider>
-      <RouterProvider router={router} />
-    </ViewportProvider>
+    <BrowserFontsizeProvider>
+      <ViewportProvider>
+        <RouterProvider router={router} />
+      </ViewportProvider>
+    </BrowserFontsizeProvider>
   );
 }
 

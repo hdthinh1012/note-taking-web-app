@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CookieService from "@/logic/cookie/cookieService.js";
 import type { TokenPayload } from "@/logic/jwt/jwtService.js";
+import { viewportContext } from "@/global/provider/ViewportProvider.js";
+import defaultTheme from "tailwindcss/defaultTheme";
+import LaptopSidebar from "@/components/home/sidebar/LaptopSidebar.js";
+import MobileHeader from "@/components/home/header/MobileHeader.js";
+import LaptopAllNotes from "@/components/home/menus/LaptopAllNotes.js";
+import MobileAllNotes from "@/components/home/menus/MobileAllNotes.js";
 
 function decodePayload(token: string): TokenPayload | null {
     const jwt = token;
@@ -12,6 +18,7 @@ function decodePayload(token: string): TokenPayload | null {
 }
 
 export default function UserHome() {
+    const { width, height } = useContext(viewportContext);
     const [username, setUsername] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -52,9 +59,39 @@ export default function UserHome() {
         );
     }
 
+    const LaptopUserHome = () => {
+        return (<div className="grid grid-cols-[minmax(14rem,18rem)_1fr] w-full h-full">
+            <LaptopSidebar />
+            <LaptopAllNotes />
+        </div>)
+    };
+
+    const TabletUserHome = () => {
+        return (<div className="grid grid-cols-1 w-full">
+            <MobileHeader />
+            <LaptopSidebar />
+            <MobileAllNotes />
+        </div>);
+    }
+
+    const MobileUserHome = () => {
+        return (<div className="grid grid-cols-1 w-full">
+            <MobileHeader />
+            <LaptopSidebar />
+            <MobileAllNotes />
+        </div>);
+    };
+
+    console.log(defaultTheme.screens);
+
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
-            <h1 className="text-2xl font-bold">Welcome, {username}!</h1>
+        <div className="flex flex-col items-center justify-center">
+            {/* <h1 className="text-2xl font-bold">Welcome, {username}!</h1> */}
+            {/* Add header, sidebar, etc. here if needed */}
+            {/* <p>Viewport Size: {width} x {height}</p> */}
+            {width >= parseInt(defaultTheme.screens.lg.replace('rem', '')) ? <LaptopUserHome /> :
+                    width >= parseInt(defaultTheme.screens.md.replace('rem', '')) ? <TabletUserHome /> :
+                        <MobileUserHome />}
         </div>
     );
 }
