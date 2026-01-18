@@ -3,6 +3,29 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --animate-slide-in: slide-in 0.3s ease-in-out forwards;
+  --animate-slide-out: slide-out 0.3s ease-in-out forwards;
+
+  @keyframes slide-in {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-out {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

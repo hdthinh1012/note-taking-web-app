@@ -5,6 +5,7 @@ import type { TokenPayload } from "@/logic/jwt/jwtService.js";
 import { viewportContext } from "@/global/provider/ViewportProvider.js";
 import defaultTheme from "tailwindcss/defaultTheme";
 import LaptopSidebar from "@/components/home/sidebar/LaptopSidebar.js";
+import MobileSidebar from "@/components/home/sidebar/MobileSidebar.js";
 import MobileHeader from "@/components/home/header/MobileHeader.js";
 import LaptopAllNotes from "@/components/home/menus/LaptopAllNotes.js";
 import MobileAllNotes from "@/components/home/menus/MobileAllNotes.js";
@@ -21,6 +22,7 @@ export default function UserHome() {
     const { width, height } = useContext(viewportContext);
     const [username, setUsername] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isSidebarHidden, setIsSidebarHidden] = useState<boolean>(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -60,32 +62,30 @@ export default function UserHome() {
     }
 
     const LaptopUserHome = () => {
-        return (<div className="grid grid-cols-[minmax(14rem,18rem)_1fr] w-full h-full">
+        return (<div className="grid grid-cols-[minmax(14rem,18rem)_1fr] w-full min-h-screen">
             <LaptopSidebar />
             <LaptopAllNotes />
         </div>)
     };
 
     const TabletUserHome = () => {
-        return (<div className="grid grid-cols-1 w-full">
-            <MobileHeader />
-            <LaptopSidebar />
+        return (<div className="grid grid-cols-1 w-full min-h-screen">
+            <MobileHeader isSidebarHidden={isSidebarHidden} toggleSidebar={() => setIsSidebarHidden(!isSidebarHidden)} />
+            <MobileSidebar isHidden={isSidebarHidden} toggleSidebar={() => setIsSidebarHidden(!isSidebarHidden)} />
             <MobileAllNotes />
         </div>);
     }
 
     const MobileUserHome = () => {
-        return (<div className="grid grid-cols-1 w-full">
-            <MobileHeader />
-            <LaptopSidebar />
+        return (<div className="grid grid-cols-1 w-full min-h-screen">
+            <MobileHeader isSidebarHidden={isSidebarHidden} toggleSidebar={() => setIsSidebarHidden(!isSidebarHidden)} />
+            <MobileSidebar isHidden={isSidebarHidden} toggleSidebar={() => setIsSidebarHidden(!isSidebarHidden) }/>
             <MobileAllNotes />
         </div>);
     };
 
-    console.log(defaultTheme.screens);
-
     return (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center min-h-screen w-full">
             {/* <h1 className="text-2xl font-bold">Welcome, {username}!</h1> */}
             {/* Add header, sidebar, etc. here if needed */}
             {/* <p>Viewport Size: {width} x {height}</p> */}
