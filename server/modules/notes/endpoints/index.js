@@ -7,5 +7,7 @@ router.get('/health', (req, res) => {
 });
 
 // Add more notes endpoints here
+import categoriesRouter from './categories/router.js';
+router.use('/categories', categoriesRouter);
 
 export default router;

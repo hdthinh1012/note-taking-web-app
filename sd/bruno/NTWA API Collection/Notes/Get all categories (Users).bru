@@ -1,0 +1,20 @@
+meta {
+  name: Get all categories (Users)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{SERVER_URL}}/notes/categories/all
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhkdGhpbmgwMDEiLCJpYXQiOjE3NzA3MzY1NjgsImV4cCI6MTc3MDc0MDE2OH0.PeDAa67VjwgcR6Fn-tCtQpWXnE34XNsEgErhHk-Nr8U
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
